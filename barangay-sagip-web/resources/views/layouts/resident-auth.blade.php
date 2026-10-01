@@ -4,118 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Barangay SAGIP')</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Manrope', 'sans-serif'] },
-                    colors: {
-                        base: '#0A0A12',
-                        panel: '#13131F',
-                        field: '#1B1C2A',
-                        edge: '#2A2B3D',
-                        violet: '#7C3AED',
-                        indigo: '#4F46E5',
-                        azure: '#3B82F6',
-                    },
-                }
-            }
-        }
-    </script>
+    <x-design-tokens />
     <style>
-        body { font-family: 'Manrope', sans-serif; }
-        .brand-glow {
-            position: absolute;
-            border-radius: 9999px;
-            filter: blur(80px);
-            opacity: 0.55;
-        }
-        @media (prefers-reduced-motion: no-preference) {
-            .brand-glow--drift { animation: drift 14s ease-in-out infinite; }
-        }
-        @keyframes drift {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(24px, -18px) scale(1.08); }
-        }
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus,
-        input:-webkit-autofill:active {
-            -webkit-box-shadow: 0 0 0 1000px #1B1C2A inset !important;
-            -webkit-text-fill-color: #F3F4F6 !important;
-            caret-color: #F3F4F6;
-            transition: background-color 9999s ease-in-out 0s;
+        input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 1000px rgb(var(--c-surface)) inset !important;
+            -webkit-text-fill-color: rgb(var(--c-ink)) !important;
         }
     </style>
     @stack('head')
 </head>
-<body class="bg-base text-gray-100 min-h-screen">
+<body class="bg-canvas text-ink min-h-screen antialiased">
+<x-splash-screen />
     <div class="min-h-screen lg:flex">
 
-        {{-- Left: branding panel — hidden on small screens to keep the form reachable without scrolling on a phone --}}
-        <div class="relative hidden lg:flex lg:w-[46%] overflow-hidden bg-[#0A0A12] bg-cover bg-top" style="background-image: url('{{ asset('images/sagip-hero.jpg') }}')">
-            <div class="absolute inset-0 bg-gradient-to-b from-black/25 via-black/50 to-black/85"></div>
+        {{-- Left: branding panel (same navy as the app sidebar) — hidden on small screens so the form is reachable without scrolling --}}
+        <div class="relative hidden lg:flex lg:w-[44%] overflow-hidden bg-navy bg-cover bg-bottom" style="background-image: url('{{ asset('images/sagip-hero.jpg') }}')">
+            <div class="absolute inset-0 bg-navy/85"></div>
 
-            <div class="relative z-10 flex flex-col justify-center h-full p-10 xl:p-12 w-full">
-                <div>
-                    <h1 class="text-3xl xl:text-4xl font-extrabold leading-tight text-white max-w-sm">
+            <div class="relative z-10 flex flex-col h-full p-10 xl:p-14 w-full text-white">
+                <div class="flex items-center gap-2.5 font-bold text-lg">
+                    <span class="h-10 w-10 rounded-xl bg-accent inline-flex items-center justify-center"><x-icon name="shield-check" /></span>
+                    Barangay SAGIP
+                </div>
+
+                <div class="my-auto pt-10">
+                    <h1 class="text-4xl font-bold leading-tight max-w-md">
                         Help is one report away.
                     </h1>
-                    <p class="mt-4 text-gray-300 max-w-sm leading-relaxed">
+                    <p class="mt-4 text-slate-300 max-w-md leading-relaxed">
                         The emergency and assistance line for Barangay Calatagan Tibang, Virac, Catanduanes —
                         submit a report and get matched to the right responder in seconds.
                     </p>
-                </div>
 
-                <div class="space-y-4 mt-10">
-                    @foreach ([
-                        ['Report in your own words', 'No forms to fill out mid-emergency — just describe what\'s happening.'],
-                        ['Matched automatically', 'Your report is classified and routed to the right responder.'],
-                        ['Tracked in real time', 'Follow your request from submitted to resolved.'],
-                    ] as [$title, $body])
-                        <div class="flex items-start gap-3">
-                            <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-gradient-to-br from-violet to-azure"></span>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-100">{{ $title }}</p>
-                                <p class="text-sm text-gray-400">{{ $body }}</p>
+                    <div class="mt-10 space-y-3 max-w-md">
+                        @foreach ([
+                            ['siren', 'Report in your own words', 'No forms to fill out mid-emergency — just describe what\'s happening.'],
+                            ['users', 'Matched automatically', 'Your report is classified and routed to the right responder.'],
+                            ['activity', 'Tracked in real time', 'Follow your request from submitted to resolved.'],
+                        ] as [$icon, $title, $body])
+                            <div class="flex items-start gap-3 rounded-2xl bg-white/5 border border-white/10 p-4">
+                                <span class="h-10 w-10 rounded-xl bg-accent/20 text-sky-200 inline-flex items-center justify-center shrink-0"><x-icon :name="$icon" /></span>
+                                <div>
+                                    <p class="text-sm font-bold">{{ $title }}</p>
+                                    <p class="text-sm text-slate-300">{{ $body }}</p>
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
 
         {{-- Right: form panel --}}
-        <div class="flex-1 flex items-center justify-center px-6 py-12">
-            <div class="w-full max-w-sm">
+        <main class="relative flex-1 flex items-center justify-center px-4 sm:px-6 py-10">
+            <button type="button" data-theme-toggle onclick="toggleTheme()" aria-label="Dark mode" aria-pressed="false" title="Toggle dark mode"
+                    class="absolute top-4 right-4 h-11 w-11 inline-flex items-center justify-center rounded-full bg-surface border border-line text-navy hover:bg-muted transition-colors duration-200 cursor-pointer">
+                <x-icon name="moon" class="theme-icon-moon" />
+                <x-icon name="sun" class="theme-icon-sun" />
+            </button>
 
-                <div class="lg:hidden flex items-center justify-center mb-10">
+            <div class="w-full max-w-md">
+
+                <div class="lg:hidden flex items-center justify-center mb-8">
                     <img src="{{ asset('images/sagip-logo.png') }}" alt="Barangay SAGIP" class="h-11 w-auto rounded-md">
                 </div>
 
-                @if (session('status'))
-                    <div class="mb-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 px-4 py-3 text-sm">
-                        {{ session('status') }}
-                    </div>
-                @endif
+                <div class="bg-surface rounded-2xl border border-line shadow-card p-6 sm:p-8">
+                    @if (session('status'))
+                        <div class="mb-6 flex items-start gap-3 rounded-xl bg-success/10 border border-success/20 text-success px-4 py-3 text-sm font-bold" role="status">
+                            <x-icon name="check-circle" class="mt-px" />
+                            <span>{{ session('status') }}</span>
+                        </div>
+                    @endif
 
-                @if ($errors->any())
-                    <div class="mb-5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-3 text-sm">
-                        <ul class="list-disc list-inside space-y-0.5">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                    @if ($errors->any())
+                        <div class="mb-6 flex items-start gap-3 rounded-xl bg-danger/10 border border-danger/20 text-danger px-4 py-3 text-sm" role="alert">
+                            <x-icon name="alert" class="mt-px" />
+                            <ul class="list-disc list-inside space-y-0.5">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                @yield('content')
+                    @yield('content')
+                </div>
             </div>
-        </div>
+        </main>
     </div>
     @stack('scripts')
 </body>
