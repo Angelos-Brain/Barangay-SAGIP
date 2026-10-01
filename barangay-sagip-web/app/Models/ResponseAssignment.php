@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class ResponseAssignment extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'emergency_request_id',
         'response_personnel_id',

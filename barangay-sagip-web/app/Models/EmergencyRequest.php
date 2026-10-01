@@ -2,16 +2,28 @@
 
 namespace App\Models;
 
+use App\Enums\IncidentOutcome;
 use App\Enums\RequestStatus;
+use App\Enums\SosReason;
 use App\Enums\UrgencyLevel;
+use App\Enums\VerificationStatus;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 
 class EmergencyRequest extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'resident_id',
         'description',
+        'source',
+        'sos_channel',
+        'sos_reason',
+        'sos_reason_other',
+        'device_id',
+        'reporter_verification_status',
         'category',
         'category_confidence',
         'urgency',
@@ -22,8 +34,23 @@ class EmergencyRequest extends Model
         'validated_by',
         'latitude',
         'longitude',
+        'location_accuracy_meters',
+        'location_flags',
+        'attachment_path',
         'status',
+        'outcome',
+        'outcome_set_by',
+        'outcome_set_at',
     ];
+
+    /** GPS accuracy worse than the configured threshold. */
+    public const FLAG_POOR_ACCURACY = 'poor_accuracy';
+
+    /** The device did not report an accuracy value at all. */
+    public const FLAG_ACCURACY_UNKNOWN = 'accuracy_unknown';
+
+    /** Coordinates fall outside the configured barangay radius. */
+    public const FLAG_OUTSIDE_BOUNDS = 'outside_bounds';
 
     protected function casts(): array
     {
@@ -36,6 +63,12 @@ class EmergencyRequest extends Model
             'validated_at' => 'datetime',
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
+            'location_accuracy_meters' => 'decimal:2',
+            'location_flags' => 'array',
+            'sos_reason' => SosReason::class,
+            'reporter_verification_status' => VerificationStatus::class,
+            'outcome' => IncidentOutcome::class,
+            'outcome_set_at' => 'datetime',
         ];
     }
 
@@ -47,6 +80,11 @@ class EmergencyRequest extends Model
     public function validator()
     {
         return $this->belongsTo(User::class, 'validated_by');
+    }
+
+    public function outcomeSetter()
+    {
+        return $this->belongsTo(User::class, 'outcome_set_by');
     }
 
     public function statusLogs()
@@ -75,6 +113,59 @@ class EmergencyRequest extends Model
     public function classificationLogs()
     {
         return $this->hasMany(TokenizationClassificationLog::class);
+    }
+
+    public function outboundSmsMessages()
+    {
+        return $this->hasMany(OutboundSmsMessage::class);
+    }
+
+    /**
+     * Feature 2: raised from the SOS button rather than the report form.
+     */
+    public function isSos(): bool
+    {
+        return in_array($this->source, ['sos', 'sms_fallback'], true);
+    }
+
+    /**
+     * Feature 2: the reason as shown to responders, including the resident's
+     * own words when they chose "Other".
+     */
+    public function sosReasonLabel(): ?string
+    {
+        if ($this->sos_reason === null) {
+            return null;
+        }
+
+        return $this->sos_reason === SosReason::Other && filled($this->sos_reason_other)
+            ? sprintf('Other: %s', $this->sos_reason_other)
+            : $this->sos_reason->label();
+    }
+
+    /**
+     * Feature 2: who may record an outcome or clear the reporter's cooldown —
+     * any official or administrator, or a responder who was assigned to this
+     * incident at any point (the assignment is closed once it is resolved).
+     */
+    public function isHandledBy(User $user): bool
+    {
+        if ($user->isOfficialOrAdmin()) {
+            return true;
+        }
+
+        return $user->isPersonnel()
+            && $this->assignments()
+                ->whereHas('responsePersonnel', fn ($personnel) => $personnel->where('user_id', $user->id))
+                ->exists();
+    }
+
+    /**
+     * Feature 2: an outcome may be recorded only once the response is over.
+     */
+    public function canRecordOutcome(): bool
+    {
+        return in_array($this->status, [RequestStatus::Resolved, RequestStatus::Cancelled], true);
     }
 
     /**
