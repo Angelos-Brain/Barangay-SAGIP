@@ -21,9 +21,7 @@ use Illuminate\View\View;
  */
 class ResponseAssignmentController extends Controller
 {
-    public function __construct(protected ResponseAssignmentService $assignmentService)
-    {
-    }
+    public function __construct(protected ResponseAssignmentService $assignmentService) {}
 
     public function edit(EmergencyRequest $emergencyRequest): View
     {
@@ -33,7 +31,7 @@ class ResponseAssignmentController extends Controller
             ]);
         }
 
-        $availablePersonnel = ResponsePersonnel::where('is_available', true)
+        $availablePersonnel = ResponsePersonnel::with('user')->where('is_available', true)
             ->whereDoesntHave('activeAssignments')
             ->orderBy('name')
             ->get();

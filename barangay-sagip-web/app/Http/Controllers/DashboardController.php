@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EmergencyRequest;
 use App\Models\ResponsePersonnel;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -71,12 +72,19 @@ class DashboardController extends Controller
             ->limit(15)
             ->get();
 
+        // Feature 2: accounts with repeat false-alarm outcomes, for human review.
+        $flaggedAccounts = User::flaggedForFalseAlarms()
+            ->orderByDesc('false_alarm_count')
+            ->limit(20)
+            ->get();
+
         return view('dashboard', [
             'role' => 'official',
             'counts' => $counts,
             'categoryBreakdown' => $categoryBreakdown,
             'needsReviewRequests' => $needsReviewRequests,
             'recentRequests' => $recentRequests,
+            'flaggedAccounts' => $flaggedAccounts,
         ]);
     }
 }

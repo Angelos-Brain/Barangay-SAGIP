@@ -29,7 +29,7 @@ class ReportController extends Controller
             ->pluck('total', 'urgency');
 
         $avgResponseMinutes = ResponseAssignment::whereNotNull('completed_at')
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, assigned_at, completed_at)) as avg_minutes')
+            ->selectRaw('AVG('.$this->minutesBetween('assigned_at', 'completed_at').') as avg_minutes')
             ->value('avg_minutes');
 
         $personnelWorkload = DB::table('response_personnel')
@@ -42,6 +42,20 @@ class ReportController extends Controller
         return view('reports.index', compact('byCategory', 'byUrgency', 'avgResponseMinutes', 'personnelWorkload'));
     }
 
+    /**
+     * Minutes between two timestamp columns. Local development uses MySQL or
+     * SQLite and production uses PostgreSQL, so the date arithmetic has to
+     * match the active driver.
+     */
+    protected function minutesBetween(string $from, string $to): string
+    {
+        return match (DB::connection()->getDriverName()) {
+            'pgsql' => "EXTRACT(EPOCH FROM ({$to} - {$from})) / 60",
+            'sqlite' => "(julianday({$to}) - julianday({$from})) * 1440",
+            default => "TIMESTAMPDIFF(MINUTE, {$from}, {$to})",
+        };
+    }
+
     public function exportCsv(): Response
     {
         $requests = EmergencyRequest::with('resident', 'currentAssignment.responsePersonnel')->get();
@@ -50,20 +64,20 @@ class ReportController extends Controller
         foreach ($requests as $r) {
             $csv .= implode(',', [
                 $r->id,
-                '"' . str_replace('"', '""', $r->resident->name) . '"',
+                '"'.str_replace('"', '""', $r->resident->name).'"',
                 $r->category,
                 $r->urgency?->value,
                 $r->status->value,
                 $r->category_confidence,
                 $r->urgency_confidence,
-                '"' . ($r->currentAssignment->responsePersonnel->name ?? '') . '"',
+                '"'.($r->currentAssignment->responsePersonnel->name ?? '').'"',
                 $r->created_at->toDateTimeString(),
-            ]) . "\n";
+            ])."\n";
         }
 
         return response($csv, 200, [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="barangay_sagip_requests_' . now()->format('Y-m-d') . '.csv"',
+            'Content-Disposition' => 'attachment; filename="barangay_sagip_requests_'.now()->format('Y-m-d').'.csv"',
         ]);
     }
 }

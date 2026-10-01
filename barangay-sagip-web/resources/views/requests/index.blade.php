@@ -2,7 +2,7 @@
 @section('title', 'Requests — Barangay SAGIP')
 
 @section('content')
-<div class="flex items-center justify-between mb-4">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
     <h1 class="text-xl font-bold text-navy">
         {{ auth()->user()->isResident() ? 'My Requests' : 'All Requests' }}
     </h1>
@@ -13,7 +13,7 @@
     @endif
 </div>
 
-<div class="bg-white rounded-lg shadow overflow-hidden">
+<div class="bg-surface rounded-lg shadow overflow-hidden">
     <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-gray-500 text-left">
@@ -35,7 +35,9 @@
                 <tr class="hover:bg-gray-50">
                     <td class="px-4 py-2 font-medium">#{{ $r->id }}</td>
                     @unless(auth()->user()->isResident())
-                        <td class="px-4 py-2">{{ $r->resident->name }}</td>
+                        <td class="px-4 py-2">
+                            <div class="flex items-center gap-2"><x-avatar :user="$r->resident" size="h-7 w-7 text-xs" /><span>{{ $r->resident->name }}</span></div>
+                        </td>
                     @endunless
                     <td class="px-4 py-2 capitalize">{{ str_replace('_', ' ', $r->category ?? '—') }}</td>
                     <td class="px-4 py-2">
