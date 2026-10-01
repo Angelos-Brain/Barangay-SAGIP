@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\DeliverableEmail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -31,7 +33,15 @@ class RegisteredUserController extends Controller
             'first_name' => ['required', 'string', 'max:100', 'regex:/^\p{Lu}[\p{L}\'-]*(\s\p{Lu}[\p{L}\'-]*)*$/u'],
             'middle_name' => ['nullable', 'string', 'max:100', 'regex:/^(\p{Lu}[\p{L}\'-]*(\s\p{Lu}[\p{L}\'-]*)*)?$/u'],
             'last_name' => ['required', 'string', 'max:100', 'regex:/^\p{Lu}[\p{L}\'-]*(\s\p{Lu}[\p{L}\'-]*)*$/u'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'max:255',
+                $this->emailFormatRule(),
+                new DeliverableEmail,
+                'unique:users,email',
+            ],
             'phone_number' => ['required', 'string', 'max:30'],
             'address' => [
                 'required',
@@ -44,7 +54,8 @@ class RegisteredUserController extends Controller
             'first_name.regex' => 'First name must start with a capital letter and contain only letters.',
             'middle_name.regex' => 'Middle name must start with a capital letter and contain only letters.',
             'last_name.regex' => 'Last name must start with a capital letter and contain only letters.',
-            'address.regex' => 'Address must follow: House/Unit Number, Street/Road, Barangay, Municipality/City, Province. Example: 225, Provincial Road, Calatagan Tibang, Virac, Catanduanes.',
+            'address.regex' => 'Address must follow: House/Unit Number, Street/Road, Barangay, Municipality/City, Province. Example: 123, Sample Street, Calatagan Tibang, Virac, Catanduanes.',
+            'email.email' => 'Enter a valid email address, for example juan.delacruz@gmail.com.',
         ]);
 
         $fullName = trim(implode(' ', array_filter([
@@ -78,5 +89,20 @@ class RegisteredUserController extends Controller
 
         return redirect()->route('residents.profile.edit')
             ->with('status', 'Account created! Your home address was saved. Please complete the rest of your resident profile.');
+    }
+
+    /**
+     * Feature 6: strict RFC parsing plus homograph-spoofing protection, and a
+     * live MX lookup when `sagip.registration.email.verify_mx` is enabled.
+     */
+    protected function emailFormatRule(): Rules\Email
+    {
+        $rule = Rule::email()->strict()->preventSpoofing();
+
+        if (config('sagip.registration.email.verify_mx')) {
+            $rule->validateMxRecord();
+        }
+
+        return $rule;
     }
 }

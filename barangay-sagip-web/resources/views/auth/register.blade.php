@@ -2,8 +2,8 @@
 @section('title', 'Create Account — Barangay SAGIP')
 
 @section('content')
-<h2 class="text-2xl font-bold text-white">Create your account</h2>
-<p class="mt-1.5 text-sm text-gray-500 mb-8">Step 1 of 2 — your complete home address is required for registration.</p>
+<h2 class="text-2xl font-bold text-navy">Create your account</h2>
+<p class="mt-1.5 text-sm text-muted-fg mb-8">Step 1 of 2 — your complete home address is required for registration.</p>
 
 <form method="POST" action="{{ route('register') }}" class="space-y-5">
     @csrf
@@ -16,11 +16,11 @@
     <x-auth-field label="Phone Number" name="phone_number" :value="old('phone_number')" placeholder="09XXXXXXXXX" />
 
     <div>
-        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Complete Home Address</label>
+        <label for="address" class="block text-sm font-bold text-navy mb-1.5">Complete Home Address</label>
         <textarea id="address" name="address" rows="3" required maxlength="500"
-                  placeholder="225, Provincial Road, Calatagan Tibang, Virac, Catanduanes"
-                  class="w-full rounded-xl border-gray-300 shadow-sm focus:border-violet focus:ring-violet">{{ old('address') }}</textarea>
-        <p class="mt-1.5 text-xs text-gray-500">
+                  placeholder="e.g. 123, Sample Street, Calatagan Tibang, Virac, Catanduanes"
+                  class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-base text-ink placeholder-slate-400 transition-colors duration-200 focus:border-navy focus:outline-none focus:ring-[3px] focus:ring-navy/10">{{ old('address') }}</textarea>
+        <p class="mt-1.5 text-xs text-muted-fg">
             Format: House/Unit Number, Street/Road, Barangay, Municipality/City, Province
         </p>
     </div>
@@ -28,14 +28,14 @@
     <x-auth-field label="Password" name="password" type="password" placeholder="At least 8 characters" />
     <x-auth-field label="Confirm Password" name="password_confirmation" type="password" placeholder="Re-enter your password" />
 
-    <button class="w-full rounded-xl bg-gradient-to-r from-violet to-azure py-3 font-semibold text-white shadow-lg shadow-violet/20 hover:shadow-violet/30 hover:opacity-95 transition">
+    <button class="w-full min-h-12 rounded-xl bg-accent py-3 font-bold text-white shadow-card hover:opacity-90 transition-opacity duration-200 cursor-pointer">
         Create Account
     </button>
 </form>
 
-<p class="mt-8 text-center text-sm text-gray-500">
+<p class="mt-8 text-center text-sm text-muted-fg">
     Already registered?
-    <a href="{{ route('login') }}" class="text-transparent bg-clip-text bg-gradient-to-r from-violet to-azure font-semibold hover:opacity-80">
+    <a href="{{ route('login') }}" class="font-bold text-accent hover:underline">
         Sign in
     </a>
 </p>

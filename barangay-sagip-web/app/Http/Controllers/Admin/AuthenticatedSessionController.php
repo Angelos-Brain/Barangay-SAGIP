@@ -34,6 +34,15 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
+        // Responders sign in at /personnel/login, which enforces their lockout
+        // and First Login status; this form gives them the generic failure.
+        if (Auth::user()->isPersonnel()) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
         if (Auth::user()->isResident()) {
             Auth::logout();
             throw ValidationException::withMessages([
@@ -48,11 +57,14 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
+        // Responders sign in by mobile number, so send them back to that page.
+        $wasPersonnel = Auth::user()?->isPersonnel() ?? false;
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login');
+        return redirect()->route($wasPersonnel ? 'personnel.login' : 'admin.login');
     }
 }
