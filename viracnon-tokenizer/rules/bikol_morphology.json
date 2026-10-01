@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "description": "Morphological rule data for the Viracnon segmenter. Every item here is taken from the project brief's 'Base morphology' section (shared across Bikol languages, therefore COGNATE-PROBABLE for Virac). Nothing here is independently confirmed for Virac.",
+    "confidence": "COGNATE-PROBABLE",
+    "source": "project brief, 'Base morphology' + 'Confirmed distinctive features' sections"
+  },
+  "prefixes": ["mang-", "nang-", "mag-", "nag-", "pag-", "ig-", "ma-", "na-", "i-"],
+  "suffixes": ["-on", "-an"],
+  "reduplication": {
+    "types": ["CV", "full"],
+    "note": "CV- or full-root reduplication marks aspect/plurality; a reduplicated form is ONE root, never two."
+  },
+  "discourse_particles": ["daw", "man", "na", "pa", "gayod", "garo", "dawà", "maski", "bagá"],
+  "discourse_particles_note": "Must NOT be split off as affixes. No glosses supplied by the brief.",
+  "non_virac_contrast_forms": {
+    "an": "Brief: Naga Bikol (bcl) topic marker; Virac uses 'su'.",
+    "dai": "Brief: Naga Bikol (bcl) negation; Virac uses 'dài'.",
+    "mayò": "Brief: Naga Bikol (bcl) existential negation; Virac uses 'daing'.",
+    "tâno": "Brief: Naga Bikol (bcl) 'why'; Virac uses 'ngatà'."
+  },
+  "non_virac_contrast_forms_note": "These are NOT Viracnon lexicon entries. The segmenter only attaches the note; it never glosses them as Viracnon.",
+  "affixable_pos": ["root", "noun", "verb", "numeral", "loanword (Spanish-derived)", "noun (Spanish loan)"],
+  "affixable_pos_note": "Lexicon entries whose POS is listed here may serve as roots inside unknown words. Function words (pronouns, articles, negation, interrogatives, particles) are excluded so that e.g. 'na'+'ta' is not analysed as prefix + pronoun."
+}

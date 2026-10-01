@@ -1,0 +1,1520 @@
+{
+  "name": "Barangay SAGIP labeled incident reports",
+  "version": 1,
+  "categories": [
+    "medical",
+    "fire",
+    "peace_order",
+    "disaster",
+    "general_assistance"
+  ],
+  "urgencies": [
+    "critical",
+    "high",
+    "average",
+    "low"
+  ],
+  "count": 150,
+  "records": [
+    {
+      "id": "SAGIP-0001",
+      "text": "Hindi na humihinga si tatay, tulungan po kami ngayon din!",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0002",
+      "text": "May nalunod na bata sa creek, unconscious na siya!",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": "Contains the disaster keyword 'creek' but the emergency is medical."
+    },
+    {
+      "id": "SAGIP-0003",
+      "text": "Seizure si anak ko, hindi tumitigil, kailangan ng ambulansya",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0004",
+      "text": "Buntis ako at dumudugo na, nanganganib mabuhay ang baby",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0005",
+      "text": "Chest pain si lolo at hirap huminga, kailangan agad ng tulong",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0006",
+      "text": "Nabali ang binti ni kuya sa motor at dumudugo ng malakas",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0007",
+      "text": "Unconscious ang lola ko matapos madapa sa hagdan",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0008",
+      "text": "Hindi humihinga ang sanggol, tulong po agad!",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0009",
+      "text": "Napaso ang bata sa kumukulong tubig, malaki ang sugat",
+      "category": "medical",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": "Contains the fire keyword 'paso'; the incident is a burn injury, not a fire."
+    },
+    {
+      "id": "SAGIP-0010",
+      "text": "Mataas na lagnat ni bunso, tatlong araw na at hindi bumababa",
+      "category": "medical",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0011",
+      "text": "Malalim ang sugat sa paa ni tatay, kailangan po tahiin",
+      "category": "medical",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0012",
+      "text": "Sumasakit ng husto ang tiyan ko at sumusuka na ako",
+      "category": "medical",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0013",
+      "text": "Nahihilo at nanghihina si nanay, diabetic po siya",
+      "category": "medical",
+      "urgency": "high",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0014",
+      "text": "Nadapa ang senior citizen sa kanto, hindi na makatayo",
+      "category": "medical",
+      "urgency": "high",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0015",
+      "text": "Hirap huminga ang asthmatic kong anak, wala kaming nebulizer",
+      "category": "medical",
+      "urgency": "high",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0016",
+      "text": "Dumudugo ang ilong ng bata at ayaw tumigil",
+      "category": "medical",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0017",
+      "text": "Sumasakit ang dibdib ni misis, baka atake sa puso",
+      "category": "medical",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0018",
+      "text": "Nanghihina ang buntis, kailangan po ng ambulansya papuntang ospital",
+      "category": "medical",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0019",
+      "text": "Nabali ang braso ng bata, hindi na makagalaw",
+      "category": "medical",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0020",
+      "text": "Hindi mapigil ang pagdurugo ng sugat sa ulo ni kuya",
+      "category": "medical",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0021",
+      "text": "May sugat lang po sa kamay, pwede po humingi ng first aid",
+      "category": "medical",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0022",
+      "text": "Kailangan po ng gamot sa altapresyon ni lola",
+      "category": "medical",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0023",
+      "text": "Kailangan po ng tulong sa paghatid sa ospital ni lolo",
+      "category": "medical",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0024",
+      "text": "Nasugatan ang tuhod ng bata habang naglalaro, pwede pa po bang gamutin dito",
+      "category": "medical",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0025",
+      "text": "Sumusuka ang anak ko pero wala nang lagnat, ano po ang gagawin",
+      "category": "medical",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0026",
+      "text": "May ambulansya po ba na pwedeng gamitin bukas para sa dialysis",
+      "category": "medical",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0027",
+      "text": "Kailangan po ng bakuna ng sanggol namin, kailan po ang schedule",
+      "category": "medical",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0028",
+      "text": "Tanong lang po, may dental services po ba sa health center",
+      "category": "medical",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0029",
+      "text": "Anong oras po bukas ang health center para sa prenatal checkup",
+      "category": "medical",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0030",
+      "text": "Meron po ba kayong libreng gamot sa ubo para sa bata",
+      "category": "medical",
+      "urgency": "low",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0031",
+      "text": "Sunog sa kabilang kalye, kumakalat na ang apoy!",
+      "category": "fire",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0032",
+      "text": "Malaki na ang apoy sa bahay ni Mang Tonio, tulong agad!",
+      "category": "fire",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0033",
+      "text": "Sumasabog ang gasul sa kusina, nasusunog na ang bahay",
+      "category": "fire",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0034",
+      "text": "Nasusunog ang bodega sa tabi ng eskwelahan, ngayon din po!",
+      "category": "fire",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0035",
+      "text": "Kumakalat na ang apoy sa mga kabahayan, kailangan ng bumbero",
+      "category": "fire",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0036",
+      "text": "May liyab na sa kusina ng karinderya, kailangan ng bumbero",
+      "category": "fire",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0037",
+      "text": "Nasusunog ang sari-sari store sa kanto, may mga tao pa sa loob",
+      "category": "fire",
+      "urgency": "critical",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0038",
+      "text": "Nag-apoy ang motor sa garahe at malapit sa tangke ng gasolina",
+      "category": "fire",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0039",
+      "text": "Nasusunog ang basurahan sa likod, umuusok na ng malaki",
+      "category": "fire",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0040",
+      "text": "May usok na galing sa bahay ng kapitbahay at walang tao sa loob",
+      "category": "fire",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0041",
+      "text": "Umuusok ang electric fan at natutunaw na ang wire",
+      "category": "fire",
+      "urgency": "high",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0042",
+      "text": "May naapoy na damo sa bakanteng lote at lumalaki na",
+      "category": "fire",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0043",
+      "text": "Umuusok ang metro ng kuryente sa labas ng bahay",
+      "category": "fire",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0044",
+      "text": "May apoy sa likod ng palengke, maliit pa pero lumalaki",
+      "category": "fire",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0045",
+      "text": "Naiwang nakasindi ang kalan at umuusok na ang kusina",
+      "category": "fire",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0046",
+      "text": "Amoy na amoy ang tumatagas na gasul sa loob ng bahay",
+      "category": "fire",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0047",
+      "text": "Nasusunog ang mga tuyong dahon sa gilid ng kalsada",
+      "category": "fire",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0048",
+      "text": "Nag-spark ang extension cord kagabi, baka po pasabugin ang linya",
+      "category": "fire",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0049",
+      "text": "Nasunog ang parte ng dingding pero napatay na namin, pakicheck po",
+      "category": "fire",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0050",
+      "text": "May nagsisiga ng basura sa tabi ng bahay namin, natatakot kami",
+      "category": "fire",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0051",
+      "text": "Sira ang fire extinguisher sa barangay hall, pwede po bang palitan",
+      "category": "fire",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0052",
+      "text": "Nasunog ang bahagi ng bubong dahil sa kuryente, wala nang apoy ngayon",
+      "category": "fire",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0053",
+      "text": "Nasusunog ang ilalim ng tulay, may mga kahoy doon",
+      "category": "fire",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0054",
+      "text": "Nag-usok ang aircon sa kwarto, pinatay na namin ang breaker",
+      "category": "fire",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0055",
+      "text": "May naaamoy na parang nasusunog na plastik sa likod bahay",
+      "category": "fire",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0056",
+      "text": "Tanong lang po, kailan po ang fire safety seminar sa barangay",
+      "category": "fire",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0057",
+      "text": "Paano po kami makakakuha ng fire extinguisher para sa bahay",
+      "category": "fire",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0058",
+      "text": "Meron po ba kayong training para sa fire brigade volunteers",
+      "category": "fire",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0059",
+      "text": "Saan po ang pinakamalapit na fire hydrant sa purok namin",
+      "category": "fire",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0060",
+      "text": "Anong number po ang tatawagan kapag may sunog sa gabi",
+      "category": "fire",
+      "urgency": "low",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0061",
+      "text": "May dalang baril ang lasing sa kanto, nananakot ng mga tao!",
+      "category": "peace_order",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0062",
+      "text": "May hawak na patalim ang nag-aaway, sumisigaw ng tulong ang misis",
+      "category": "peace_order",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0063",
+      "text": "Holdaper sa may tindahan, tinangay ang pera at tumakas",
+      "category": "peace_order",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0064",
+      "text": "Sinasaktan ng lasing ang anak niya, tulong po ngayon din",
+      "category": "peace_order",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0065",
+      "text": "May kutsilyo ang nagwawala sa kalsada, delikado ang mga bata",
+      "category": "peace_order",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0066",
+      "text": "Tinangay ang bata ng hindi kilalang lalaki, habol po!",
+      "category": "peace_order",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0067",
+      "text": "Binaril ang kapitbahay namin, dumudugo siya ngayon",
+      "category": "peace_order",
+      "urgency": "critical",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": "Both peace-and-order and medical response are needed; ground truth is the security incident."
+    },
+    {
+      "id": "SAGIP-0068",
+      "text": "Nag-aaway ang dalawang lasing at may hawak na bote, nanganganib ang mga nakatingin",
+      "category": "peace_order",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0069",
+      "text": "May kahina-hinalang lalaki na paikot-ikot sa bahay namin buong gabi",
+      "category": "peace_order",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0070",
+      "text": "Nagnanakaw ng alagang manok sa likod-bahay, nahuli namin sa CCTV",
+      "category": "peace_order",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0071",
+      "text": "Nag-iingay at lasing ang mga kabataan sa plaza, ayaw umalis",
+      "category": "peace_order",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0072",
+      "text": "Nanakot ang kapitbahay na sasaktan kami dahil sa away sa lupa",
+      "category": "peace_order",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0073",
+      "text": "May nagnanakaw ng tubo ng tubig sa kanto, nahuli ng guard",
+      "category": "peace_order",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0074",
+      "text": "Nag-aaway ang mag-asawa at sumisigaw ang bata sa loob",
+      "category": "peace_order",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0075",
+      "text": "Sinira ng lasing ang bakod namin at nananakot pa",
+      "category": "peace_order",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0076",
+      "text": "May kahina-hinalang sasakyan na nakaparada sa tapat ng eskwelahan",
+      "category": "peace_order",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0077",
+      "text": "Nag-iingay ang videoke sa kabilang bahay, alas-dos na ng umaga",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0078",
+      "text": "May nagnanakaw ng sampayan, pangalawang beses na ngayong linggo",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0079",
+      "text": "Gusto po naming magpa-blotter tungkol sa away kahapon",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0080",
+      "text": "May nag-aaway na magkapitbahay tungkol sa hangganan ng lote",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0081",
+      "text": "Nasira ang gate namin nang sinipa ng lasing kagabi",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0082",
+      "text": "May lasing na natutulog sa waiting shed, hinahadlangan ang daan",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0083",
+      "text": "Palaging nag-iingay ang mga tambay sa likod ng chapel tuwing gabi",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0084",
+      "text": "May kahina-hinalang nagtatanong tungkol sa mga bahay na walang tao",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0085",
+      "text": "Nawawala ang bisikleta ng anak ko, baka nanakaw sa labas",
+      "category": "peace_order",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0086",
+      "text": "Paano po mag-file ng blotter para sa nawawalang cellphone",
+      "category": "peace_order",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0087",
+      "text": "Tanong ko lang po kung anong oras nagro-rondang tanod sa purok namin",
+      "category": "peace_order",
+      "urgency": "low",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0088",
+      "text": "Meron po ba kayong barangay protection order na pwedeng i-apply",
+      "category": "peace_order",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0089",
+      "text": "Saan po ang tanod outpost na pinakamalapit sa Purok 3",
+      "category": "peace_order",
+      "urgency": "low",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0090",
+      "text": "Kailan po ang schedule ng barangay peacekeeping seminar",
+      "category": "peace_order",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0091",
+      "text": "Tumataas ang tubig sa loob ng bahay, nanganganib ang mga bata",
+      "category": "disaster",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0092",
+      "text": "Gumuho ang lupa sa likod ng bahay, may nakabaon na kubo",
+      "category": "disaster",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0093",
+      "text": "Bumagsak na malaking puno sa bubong namin, may tao sa ilalim",
+      "category": "disaster",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0094",
+      "text": "Malakas na lindol, pumutok ang dingding at natatakot kaming bumalik",
+      "category": "disaster",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0095",
+      "text": "Landslide sa daan papuntang sitio, walang makadaan ngayon",
+      "category": "disaster",
+      "urgency": "critical",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0096",
+      "text": "Tinangay ng baha ang mga gamit namin, nasa bubong kami ngayon",
+      "category": "disaster",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0097",
+      "text": "Bumabaha na hanggang baywang sa Purok 2, kailangan ng evacuation",
+      "category": "disaster",
+      "urgency": "critical",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0098",
+      "text": "Sumabog ang creek at kumakalat na ang tubig sa kalsada",
+      "category": "disaster",
+      "urgency": "critical",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0099",
+      "text": "Tumataas nang mabilis ang tubig sa kanal, papasok na sa mga bahay",
+      "category": "disaster",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0100",
+      "text": "Malakas ang hangin at natanggal ang yero ng bubong namin",
+      "category": "disaster",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0101",
+      "text": "Bumagsak ang poste ng kuryente sa daan dahil sa bagyo",
+      "category": "disaster",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0102",
+      "text": "Barado ang kanal at bumabaha na sa harap ng bahay",
+      "category": "disaster",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0103",
+      "text": "Nagkabitak ang lupa sa gilid ng bundok matapos ang malakas na ulan",
+      "category": "disaster",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0104",
+      "text": "Nanginig ang bahay sa lindol, may bitak na sa haligi",
+      "category": "disaster",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0105",
+      "text": "Papalapit ang bagyo at wala pang evacuation center na bukas sa amin",
+      "category": "disaster",
+      "urgency": "high",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0106",
+      "text": "Nasira ng hangin ang bubong ng kubo, basang-basa na ang loob",
+      "category": "disaster",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0107",
+      "text": "Hindi humuhupa ang ulan at unti-unting tumataas ang tubig",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0108",
+      "text": "May nakaharang na sanga ng puno sa kalsada matapos ang bagyo",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0109",
+      "text": "May baradong kanal sa likod namin, mabilis pumuno kapag umulan",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0110",
+      "text": "Tumagas ang bubong ng barangay hall nang umulan kagabi",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0111",
+      "text": "Nakatumba ang kawayan sa tabi ng daan, delikado sa mga motor",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0112",
+      "text": "Naipit ang basura sa kanal kaya hindi maganda ang agos ng tubig",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0113",
+      "text": "May maliit na pagguho sa gilid ng kalsada, lumalaki kapag umuulan",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0114",
+      "text": "Basang-basa ang relief goods na nasa bodega dahil tumagas ang bubong",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": "Mentions relief goods but the report is about storm damage, not an aid request."
+    },
+    {
+      "id": "SAGIP-0115",
+      "text": "Hindi na dumadaan ang tubig sa spillway, nag-iipon na",
+      "category": "disaster",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0116",
+      "text": "Tanong lang po, saan po ang evacuation center namin kapag may bagyo",
+      "category": "disaster",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0117",
+      "text": "Kailan po ang susunod na earthquake drill sa barangay",
+      "category": "disaster",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0118",
+      "text": "Meron po ba kayong listahan ng mga flood-prone na purok",
+      "category": "disaster",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0119",
+      "text": "Paano po kami makakakuha ng update kung may typhoon signal",
+      "category": "disaster",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0120",
+      "text": "Anong oras po nagsisimula ang preemptive evacuation kapag signal number 3",
+      "category": "disaster",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0121",
+      "text": "Kailangan po namin ng burial assistance para sa namatay na tatay",
+      "category": "general_assistance",
+      "urgency": "high",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0122",
+      "text": "Nasalanta kami ng bagyo, pwede po bang humingi ng relief goods",
+      "category": "general_assistance",
+      "urgency": "high",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": "Mentions bagyo but the actual request is for aid, not storm response."
+    },
+    {
+      "id": "SAGIP-0123",
+      "text": "Wala na kaming makain simula kahapon, pwede po humingi ng ayuda",
+      "category": "general_assistance",
+      "urgency": "high",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0124",
+      "text": "Kailangan po ng tulong pambayad sa ospital, indigency po kami",
+      "category": "general_assistance",
+      "urgency": "high",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0125",
+      "text": "Nawalan ng bahay sa sunog, saan po kami pwedeng manatili",
+      "category": "general_assistance",
+      "urgency": "high",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": "Mentions sunog but the need is shelter and aid after the fire."
+    },
+    {
+      "id": "SAGIP-0126",
+      "text": "Kailangan po ng certificate of indigency para sa scholarship",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0127",
+      "text": "Pwede po ba kumuha ng barangay clearance ngayong hapon",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0128",
+      "text": "Ano po ang requirements para sa business permit ng maliit na tindahan",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0129",
+      "text": "Kailangan po ng residency certificate para sa trabaho sa Manila",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0130",
+      "text": "Pwede po bang humingi ng tulong sa byahe pauwi sa probinsya",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0131",
+      "text": "May sirang poste ng ilaw sa kalsada, madilim na po sa gabi",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0132",
+      "text": "Walang tubig sa gripo namin tatlong araw na po",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0133",
+      "text": "Hindi na nakokolekta ang basura sa purok namin, isang linggo na",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0134",
+      "text": "Kailangan po ng tulong sa pag-apply ng senior citizen ID ni lola",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0135",
+      "text": "Gusto po sana naming mag-apply sa cash for work program",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0136",
+      "text": "May sirang kalsada sa harap ng bahay, mapanganib sa motor",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0137",
+      "text": "Pwede po bang magpa-solo parent ID dito sa barangay",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0138",
+      "text": "Kailangan po ng barangay certificate para sa PWD application",
+      "category": "general_assistance",
+      "urgency": "average",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0139",
+      "text": "Naghahanap po ako ng trabaho, may job fair po ba sa barangay",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0140",
+      "text": "Tanong ko lang po kung magkano ang barangay clearance ngayon",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0141",
+      "text": "Anong oras po bukas ang barangay hall tuwing Sabado",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0142",
+      "text": "Meron po ba kayong libreng tutorial para sa mga bata",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0143",
+      "text": "Paano po mag-register sa listahan ng 4Ps beneficiaries",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0144",
+      "text": "Saan po ang tanggapan para sa livelihood training",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0145",
+      "text": "Kailan po ang susunod na distribution ng ayuda",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "fil",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0146",
+      "text": "Ano po ang requirements sa pag-apply ng cedula",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0147",
+      "text": "Pwede po ba magtanong kung sino ang kagawad sa Purok 5",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "fil",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0148",
+      "text": "Meron po ba kayong bakanteng slot sa day care center",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0149",
+      "text": "Paano po kami makakapag-request ng kopya ng barangay resolution",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "train",
+      "source": "synthetic",
+      "notes": ""
+    },
+    {
+      "id": "SAGIP-0150",
+      "text": "Tanong lang po, kailan po ang barangay assembly this month",
+      "category": "general_assistance",
+      "urgency": "low",
+      "language": "mixed",
+      "split": "test",
+      "source": "synthetic",
+      "notes": ""
+    }
+  ]
+}
