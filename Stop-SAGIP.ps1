@@ -23,5 +23,5 @@ Get-CimInstance Win32_Process | Where-Object {
 Write-Host "`n==============================================" -ForegroundColor Green
 Write-Host "       BARANGAY SAGIP DEVELOPMENT STOPPED" -ForegroundColor Green
 Write-Host "==============================================" -ForegroundColor Green
-Write-Host "MySQL84 was left running."
+Write-Host "The database service (if any) was left running."
 Write-Host "Herd was left running."

@@ -42,15 +42,31 @@ Write-Host "`n==============================================" -ForegroundColor C
 Write-Host "       BARANGAY SAGIP - LOCAL STARTUP" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 
-$mysqlService = Get-Service -Name "MySQL84" -ErrorAction SilentlyContinue
-if ($null -eq $mysqlService) { Fail "MySQL84 service was not found. Install MySQL 8.4 or adjust the service name in this script." }
+# The app requires PHP 8.4+. Another PHP (e.g. Laragon's) may come first on
+# PATH, so prefer Herd's PHP 8.4 binary for the queue worker when present.
+$Php = "php"
+$HerdPhp = Join-Path $env:USERPROFILE ".config\herd\bin\php84\php.exe"
+if (Test-Path $HerdPhp) { $Php = $HerdPhp }
+$phpVersion = & $Php -r "echo PHP_VERSION;"
+if ([version]$phpVersion -lt [version]"8.4.1") { Fail "PHP 8.4.1+ is required, but '$Php' is PHP $phpVersion. Install PHP 8.4 via Herd." }
 
-if ($mysqlService.Status -ne "Running") {
-    Write-Host "[1/4] Starting MySQL 8.4..." -ForegroundColor Yellow
-    Start-Service -Name "MySQL84"
-    Start-Sleep -Seconds 2
+# MySQL is only needed when the app is configured to use it (SQLite needs no service).
+$dbLine = Get-Content -LiteralPath $LaravelEnv | Where-Object { $_ -match '^DB_CONNECTION\s*=' } | Select-Object -First 1
+$dbConnection = if ($dbLine) { ($dbLine -split '=', 2)[1].Trim().Trim('"').Trim("'") } else { "sqlite" }
+
+if ($dbConnection -eq "mysql") {
+    $mysqlService = Get-Service -Name "MySQL*" -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -eq $mysqlService) { Fail "No MySQL Windows service was found. Install MySQL or set DB_CONNECTION=sqlite in barangay-sagip-web/.env." }
+
+    if ($mysqlService.Status -ne "Running") {
+        Write-Host "[1/4] Starting $($mysqlService.Name)..." -ForegroundColor Yellow
+        Start-Service -Name $mysqlService.Name
+        Start-Sleep -Seconds 2
+    } else {
+        Write-Host "[1/4] $($mysqlService.Name) is already running." -ForegroundColor Green
+    }
 } else {
-    Write-Host "[1/4] MySQL 8.4 is already running." -ForegroundColor Green
+    Write-Host "[1/4] Database: $dbConnection (no service to start)." -ForegroundColor Green
 }
 
 Write-Host "[2/4] Starting Vite..." -ForegroundColor Yellow
@@ -62,7 +78,7 @@ $fastApiCommand = "`$env:TOKENIZATION_SERVICE_KEY='$serviceKey'; `$env:TOKENIZAT
 Start-Process powershell.exe -ArgumentList @("-NoProfile","-NoExit","-Command",$fastApiCommand) -WindowStyle Normal
 
 Write-Host "[4/4] Starting Laravel queue..." -ForegroundColor Yellow
-$queueCommand = "Set-Location -LiteralPath '$LaravelRoot'; & php artisan queue:work database --sleep=3 --tries=3 --timeout=90"
+$queueCommand = "Set-Location -LiteralPath '$LaravelRoot'; & '$Php' artisan queue:work database --sleep=3 --tries=3 --timeout=90"
 Start-Process powershell.exe -ArgumentList @("-NoProfile","-NoExit","-Command",$queueCommand) -WindowStyle Normal
 
 Write-Host "`n==============================================" -ForegroundColor Green
