@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Enums\RequestStatus;
 use App\Models\EmergencyRequest;
 use App\Models\ResponsePersonnel;
+use App\Notifications\AssignmentReleased;
 use App\Notifications\NewAssignmentNotification;
+use App\Notifications\RequestStatusUpdated;
 use App\Services\ResponseAssignmentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,6 +50,8 @@ class ResponseAssignmentController extends Controller
             'response_personnel_id' => ['required', 'exists:response_personnel,id'],
         ]);
 
+        $previousResponder = $emergencyRequest->currentAssignment()->first()?->responsePersonnel?->user;
+
         $assignment = $this->assignmentService->manualAssign(
             $emergencyRequest,
             (int) $validated['response_personnel_id'],
@@ -55,6 +59,15 @@ class ResponseAssignmentController extends Controller
         );
 
         $assignment->responsePersonnel->user?->notify(new NewAssignmentNotification($assignment));
+
+        if ($previousResponder !== null && $previousResponder->isNot($assignment->responsePersonnel->user)) {
+            $previousResponder->notify(new AssignmentReleased($emergencyRequest));
+        }
+
+        $emergencyRequest->refresh();
+        $emergencyRequest->resident?->notify(
+            new RequestStatusUpdated($emergencyRequest, $emergencyRequest->status->value)
+        );
 
         return redirect()->route('requests.show', $emergencyRequest)->with('status', 'Responder assigned.');
     }

@@ -34,11 +34,6 @@
             </a>
             <a href="{{ route('notifications.index') }}" class="text-sm text-accent hover:underline">Notifications</a>
         </div>
-
-        <p class="text-xs text-gray-400 mt-5">
-            In a life-threatening emergency, call the barangay hotline at
-            <span class="font-semibold">{{ config('sagip.sos.hotline_number') }}</span>.
-        </p>
     </div>
 </div>
 @endsection

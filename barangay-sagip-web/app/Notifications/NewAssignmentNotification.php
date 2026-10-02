@@ -5,20 +5,29 @@ namespace App\Notifications;
 use App\Models\ResponseAssignment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class NewAssignmentNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public ResponseAssignment $assignment)
-    {
-    }
+    public function __construct(public ResponseAssignment $assignment) {}
 
     public function via(object $notifiable): array
     {
         return ['database'];
+    }
+
+    /**
+     * The in-app copy is written immediately so it never waits on a queue
+     * worker; any email still goes through the queue.
+     *
+     * @return array<string, string>
+     */
+    public function viaConnections(): array
+    {
+        return ['database' => 'sync'];
     }
 
     public function toDatabase(object $notifiable): array

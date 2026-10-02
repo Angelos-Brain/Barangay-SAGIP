@@ -5,8 +5,8 @@ namespace App\Notifications;
 use App\Models\EmergencyRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 /**
  * Feature 10: Alerts and Notifications.
@@ -21,13 +21,30 @@ class RequestStatusUpdated extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public EmergencyRequest $emergencyRequest, public string $newStatus)
-    {
-    }
+    /**
+     * @param  bool  $forResponder  word the message for the assigned responder
+     *                              rather than the resident who filed it
+     */
+    public function __construct(
+        public EmergencyRequest $emergencyRequest,
+        public string $newStatus,
+        public bool $forResponder = false,
+    ) {}
 
     public function via(object $notifiable): array
     {
         return ['database'];
+    }
+
+    /**
+     * The in-app copy is written immediately so it never waits on a queue
+     * worker; any email still goes through the queue.
+     *
+     * @return array<string, string>
+     */
+    public function viaConnections(): array
+    {
+        return ['database' => 'sync'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -35,7 +52,11 @@ class RequestStatusUpdated extends Notification implements ShouldQueue
         return [
             'emergency_request_id' => $this->emergencyRequest->id,
             'status' => $this->newStatus,
-            'message' => "Your request #{$this->emergencyRequest->id} is now: " . ucfirst(str_replace('_', ' ', $this->newStatus)),
+            'message' => sprintf(
+                $this->forResponder ? 'Request #%d assigned to you is now: %s' : 'Your request #%d is now: %s',
+                $this->emergencyRequest->id,
+                ucfirst(str_replace('_', ' ', $this->newStatus)),
+            ),
         ];
     }
 
@@ -43,7 +64,7 @@ class RequestStatusUpdated extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject("Barangay SAGIP: Request #{$this->emergencyRequest->id} update")
-            ->line("Your request status is now: " . ucfirst(str_replace('_', ' ', $this->newStatus)))
+            ->line('Your request status is now: '.ucfirst(str_replace('_', ' ', $this->newStatus)))
             ->action('View Request', route('requests.show', $this->emergencyRequest));
     }
 }

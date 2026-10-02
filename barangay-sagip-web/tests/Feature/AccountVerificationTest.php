@@ -184,6 +184,12 @@ class AccountVerificationTest extends TestCase
             'full_name' => 'Maria Santos',
             'address' => '225, Provincial Road, Calatagan Tibang, Virac, Catanduanes',
             'household_members_count' => 4,
+            'birthdate' => '1980-05-12',
+            'sex' => 'female',
+            'civil_status' => 'married',
+            'purok_sitio' => 'Purok 3',
+            'emergency_contact_name' => 'Jose Santos',
+            'emergency_contact_number' => '09171234567',
         ];
 
         $this->actingAs($resident)
@@ -212,6 +218,12 @@ class AccountVerificationTest extends TestCase
                 'full_name' => 'Maria Santos',
                 'address' => '225, Provincial Road, Calatagan Tibang, Virac, Catanduanes',
                 'household_members_count' => 4,
+                'birthdate' => '1980-05-12',
+                'sex' => 'female',
+                'civil_status' => 'married',
+                'purok_sitio' => 'Purok 3',
+                'emergency_contact_name' => 'Jose Santos',
+                'emergency_contact_number' => '09171234567',
                 'vulnerability_tags' => ['elderly', 'none'],
             ]);
 
@@ -231,8 +243,34 @@ class AccountVerificationTest extends TestCase
                 'full_name' => 'Maria Santos',
                 'address' => '225, Provincial Road, Calatagan Tibang, Virac, Catanduanes',
                 'household_members_count' => 4,
+                'birthdate' => '1980-05-12',
+                'sex' => 'female',
+                'civil_status' => 'married',
+                'purok_sitio' => 'Purok 3',
+                'emergency_contact_name' => 'Jose Santos',
+                'emergency_contact_number' => '09171234567',
                 'vulnerability_tags' => ['vampire'],
             ])
             ->assertSessionHasErrors('vulnerability_tags.0');
+    }
+
+    public function test_profile_cannot_be_saved_with_empty_fields(): void
+    {
+        $resident = User::factory()->create(['role' => UserRole::Resident]);
+
+        $this->actingAs($resident)
+            ->from(route('residents.profile.edit'))
+            ->put(route('residents.profile.update'), [
+                'full_name' => 'Maria Santos',
+                'address' => '225, Provincial Road, Calatagan Tibang, Virac, Catanduanes',
+                'household_members_count' => 4,
+            ])
+            ->assertSessionHasErrors([
+                'birthdate', 'sex', 'civil_status', 'purok_sitio',
+                'vulnerability_tags', 'emergency_contact_name', 'emergency_contact_number',
+            ])
+            ->assertRedirect(route('residents.profile.edit'));
+
+        $this->assertNull($resident->fresh()->residentProfile);
     }
 }

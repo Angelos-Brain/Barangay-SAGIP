@@ -36,6 +36,17 @@ class IncidentReported extends Notification implements ShouldQueue
     }
 
     /**
+     * The in-app copy is written immediately so it never waits on a queue
+     * worker; any email still goes through the queue.
+     *
+     * @return array<string, string>
+     */
+    public function viaConnections(): array
+    {
+        return ['database' => 'sync'];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toDatabase(object $notifiable): array

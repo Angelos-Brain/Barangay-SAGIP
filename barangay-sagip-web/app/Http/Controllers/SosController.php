@@ -6,6 +6,7 @@ use App\Enums\Permission;
 use App\Http\Requests\StoreSosAttachmentRequest;
 use App\Http\Requests\StoreSosRequest;
 use App\Models\EmergencyRequest;
+use App\Notifications\RequestStatusUpdated;
 use App\Services\AuditLogger;
 use App\Services\SosService;
 use Illuminate\Http\JsonResponse;
@@ -69,6 +70,10 @@ class SosController extends Controller
         $created = $emergencyRequest->wasRecentlyCreated;
         $notified = $created ? $this->sosService->notifyResponders($emergencyRequest) : 0;
 
+        if ($created) {
+            $user->notify(new RequestStatusUpdated($emergencyRequest, $emergencyRequest->status->value));
+        }
+
         return response()->json([
             'ok' => true,
             'duplicate' => ! $created,
@@ -99,6 +104,7 @@ class SosController extends Controller
 
         if ($emergencyRequest->wasRecentlyCreated) {
             $this->sosService->notifyResponders($emergencyRequest);
+            $user->notify(new RequestStatusUpdated($emergencyRequest, $emergencyRequest->status->value));
         }
 
         $message = $this->sosService->sendSmsFallback($user, $emergencyRequest);

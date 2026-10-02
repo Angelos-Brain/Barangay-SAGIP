@@ -25,6 +25,17 @@ class NotificationController extends Controller
         return back();
     }
 
+    /**
+     * Scoped to the signed-in user, so one account can never delete
+     * another's notification by guessing its id.
+     */
+    public function destroy(string $id): RedirectResponse
+    {
+        Auth::user()->notifications()->where('id', $id)->delete();
+
+        return back()->with('status', 'Notification deleted.');
+    }
+
     public function markAllRead(): RedirectResponse
     {
         Auth::user()->unreadNotifications->markAsRead();

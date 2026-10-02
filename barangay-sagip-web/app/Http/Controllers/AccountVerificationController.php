@@ -6,6 +6,7 @@ use App\Enums\Permission;
 use App\Enums\UserRole;
 use App\Enums\VerificationStatus;
 use App\Models\User;
+use App\Notifications\AccountVerificationUpdated;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -92,6 +93,10 @@ class AccountVerificationController extends Controller
             after: ['verification_status' => $decision->value],
             description: sprintf('%s marked as %s.', $user->name, $decision->label()),
         );
+
+        if ($previous !== $decision) {
+            $user->notify(new AccountVerificationUpdated($decision, $validated['note'] ?? null));
+        }
 
         return back()->with('status', sprintf('%s is now %s.', $user->name, $decision->label()));
     }

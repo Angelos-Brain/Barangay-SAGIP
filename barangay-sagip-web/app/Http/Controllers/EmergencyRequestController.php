@@ -64,13 +64,15 @@ class EmergencyRequestController extends Controller
             $this->assignmentService->autoAssign($emergencyRequest->fresh());
         }
 
-        Auth::user()->notify(new RequestStatusUpdated($emergencyRequest, $emergencyRequest->status->value));
+        // Auto-assignment may already have moved the request on to `assigned`,
+        // so the resident is told the status it actually settled in.
+        $settled = $emergencyRequest->fresh();
+        Auth::user()->notify(new RequestStatusUpdated($settled, $settled->status->value));
 
         // Feature 8: email the officials and the on-duty responders whose
         // specialization covers this incident. Sent after classification so the
         // alert can name the category, and after the status transition so
         // recipients open the request in its settled state.
-        $settled = $emergencyRequest->fresh();
         $this->alertService->alert($settled, new IncidentReported($settled));
 
         return redirect()
@@ -204,6 +206,15 @@ class EmergencyRequestController extends Controller
         $emergencyRequest->resident->notify(
             new RequestStatusUpdated($emergencyRequest, $newStatus->value)
         );
+
+        // The assigned responder hears about changes someone else made to their
+        // request (e.g. an official cancelling it). Resolving or cancelling
+        // closes the assignment, so the latest one is used.
+        $responder = $emergencyRequest->assignments()->latest('id')->first()?->responsePersonnel?->user;
+
+        if ($responder !== null && $responder->isNot($user) && $responder->isNot($emergencyRequest->resident)) {
+            $responder->notify(new RequestStatusUpdated($emergencyRequest, $newStatus->value, forResponder: true));
+        }
 
         return back()->with('status', 'Status updated.');
     }
