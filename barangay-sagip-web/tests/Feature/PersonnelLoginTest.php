@@ -262,7 +262,7 @@ class PersonnelLoginTest extends TestCase
     {
         $user = $this->responder();
 
-        $this->post(route('personnel.login.store'), ['identifier' => '09175551234', 'password' => 'wrong-guess-123']);
+        $this->post(route('personnel.login.store'), ['identifier' => '09175551234', 'password' => 'wrong-password']);
         $this->post(route('personnel.password.send'), ['phone_number' => '09175551234']);
         $code = $this->lastCode();
         $this->post(route('personnel.password.check'), ['code' => $code]);
@@ -271,7 +271,7 @@ class PersonnelLoginTest extends TestCase
 
         $trail = json_encode(AuditLog::all()->toArray());
 
-        foreach ([$code, 'wrong-guess-123', 'new-bantay-99', 'bantay-2026!', $user->refresh()->password] as $secret) {
+        foreach ([$code, 'wrong-password', 'new-bantay-99', 'bantay-2026!', $user->refresh()->password] as $secret) {
             $this->assertStringNotContainsString($secret, $trail);
         }
 
