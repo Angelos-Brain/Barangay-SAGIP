@@ -1,0 +1,16 @@
+title = "Barangay SAGIP Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Known test-only dummy password false positive from historical commit"
+targetRules = ["generic-api-key"]
+condition = "AND"
+regexTarget = "line"
+regexes = [
+  '''wrong-guess-123'''
+]
+paths = [
+  '''^barangay-sagip-web/tests/Feature/PersonnelLoginTest\.php$'''
+]
