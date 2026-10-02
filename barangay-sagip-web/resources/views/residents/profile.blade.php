@@ -23,14 +23,14 @@
 
             <div>
                 <label class="block text-sm font-medium mb-1">Birthdate</label>
-                <input type="date" name="birthdate" value="{{ old('birthdate', optional($profile->birthdate ?? null)->format('Y-m-d')) }}"
+                <input type="date" name="birthdate" value="{{ old('birthdate', optional($profile->birthdate ?? null)->format('Y-m-d')) }}" required
                        class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
             </div>
 
             <div>
                 <label class="block text-sm font-medium mb-1">Sex</label>
-                <select name="sex" class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
-                    <option value="">—</option>
+                <select name="sex" required class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
+                    <option value="" disabled @selected(old('sex', $profile->sex ?? '') === '')>Select sex</option>
                     <option value="male" @selected(old('sex', $profile->sex ?? '') === 'male')>Male</option>
                     <option value="female" @selected(old('sex', $profile->sex ?? '') === 'female')>Female</option>
                 </select>
@@ -38,7 +38,8 @@
 
             <div>
                 <label class="block text-sm font-medium mb-1">Civil Status</label>
-                <select name="civil_status" class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
+                <select name="civil_status" required class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
+                    <option value="" disabled @selected(old('civil_status', $profile->civil_status ?? '') === '')>Select civil status</option>
                     @foreach (['single','married','widowed','separated'] as $status)
                         <option value="{{ $status }}" @selected(old('civil_status', $profile->civil_status ?? '') === $status)>
                             {{ ucfirst($status) }}
@@ -49,7 +50,7 @@
 
             <div>
                 <label class="block text-sm font-medium mb-1">Purok / Sitio</label>
-                <input type="text" name="purok_sitio" value="{{ old('purok_sitio', $profile->purok_sitio ?? '') }}"
+                <input type="text" name="purok_sitio" value="{{ old('purok_sitio', $profile->purok_sitio ?? '') }}" required
                        class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
             </div>
 
@@ -77,13 +78,13 @@
 
             <div>
                 <label class="block text-sm font-medium mb-1">Emergency Contact Name</label>
-                <input type="text" name="emergency_contact_name" value="{{ old('emergency_contact_name', $profile->emergency_contact_name ?? '') }}"
+                <input type="text" name="emergency_contact_name" value="{{ old('emergency_contact_name', $profile->emergency_contact_name ?? '') }}" required
                        class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
             </div>
 
             <div class="sm:col-span-2">
                 <label class="block text-sm font-medium mb-1">Emergency Contact Number</label>
-                <input type="text" name="emergency_contact_number" value="{{ old('emergency_contact_number', $profile->emergency_contact_number ?? '') }}"
+                <input type="text" name="emergency_contact_number" value="{{ old('emergency_contact_number', $profile->emergency_contact_number ?? '') }}" required
                        class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
             </div>
         </div>

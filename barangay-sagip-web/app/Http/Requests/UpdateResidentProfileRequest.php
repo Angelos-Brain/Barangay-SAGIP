@@ -16,10 +16,10 @@ class UpdateResidentProfileRequest extends FormRequest
     {
         return [
             'full_name' => ['required', 'string', 'max:255'],
-            'birthdate' => ['nullable', 'date', 'before:today'],
-            'sex' => ['nullable', 'in:male,female'],
-            'civil_status' => ['nullable', 'in:single,married,widowed,separated'],
-            'purok_sitio' => ['nullable', 'string', 'max:255'],
+            'birthdate' => ['required', 'date', 'before:today'],
+            'sex' => ['required', 'in:male,female'],
+            'civil_status' => ['required', 'in:single,married,widowed,separated'],
+            'purok_sitio' => ['required', 'string', 'max:255'],
             'address' => [
                 'required',
                 'string',
@@ -27,10 +27,10 @@ class UpdateResidentProfileRequest extends FormRequest
                 'regex:/^\s*(?:house\s+|unit\s+|#\s*)?\d+[A-Za-z]?(?:[-\/]\d+[A-Za-z0-9]*)?\s*,\s*[^,\s][^,]*\s*,\s*[^,\s][^,]*\s*,\s*[^,\s][^,]*\s*,\s*[^,\s][^,]*\s*$/iu',
             ],
             'household_members_count' => ['required', 'integer', 'min:1', 'max:50'],
-            'vulnerability_tags' => ['nullable', 'array'],
+            'vulnerability_tags' => ['required', 'array', 'min:1'],
             'vulnerability_tags.*' => ['string', 'in:'.implode(',', VulnerabilityTag::values())],
-            'emergency_contact_name' => ['nullable', 'string', 'max:255'],
-            'emergency_contact_number' => ['nullable', 'string', 'max:30'],
+            'emergency_contact_name' => ['required', 'string', 'max:255'],
+            'emergency_contact_number' => ['required', 'string', 'max:30'],
         ];
     }
 
@@ -38,6 +38,7 @@ class UpdateResidentProfileRequest extends FormRequest
     {
         return [
             'address.regex' => 'Address must follow: House/Unit Number, Street/Road, Barangay, Municipality/City, Province. Example: 123, Sample Street, Calatagan Tibang, Virac, Catanduanes.',
+            'vulnerability_tags.required' => 'Select at least one household vulnerability, or "None of the above".',
             'vulnerability_tags.*.in' => 'Choose vulnerability markers from the list provided.',
         ];
     }
