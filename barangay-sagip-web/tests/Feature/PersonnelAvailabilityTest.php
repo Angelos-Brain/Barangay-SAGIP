@@ -69,11 +69,40 @@ class PersonnelAvailabilityTest extends TestCase
         $this->actingAs($user)
             ->post(route('personnel.updateOwnAvailability'), [
                 'is_available' => '0',
+                'unavailability_reason' => 'Off duty.',
                 'personnel_id' => $other->id,
             ]);
 
         $this->assertFalse($own->refresh()->is_available);
         $this->assertTrue($other->refresh()->is_available);
+    }
+
+    public function test_a_reason_is_required_to_mark_unavailable(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Personnel]);
+        $personnel = $this->createPersonnel($user);
+
+        foreach ([[], ['unavailability_reason' => ''], ['unavailability_reason' => '   ']] as $reason) {
+            $this->actingAs($user)
+                ->post(route('personnel.updateOwnAvailability'), ['is_available' => '0'] + $reason)
+                ->assertSessionHasErrors(['unavailability_reason' => 'Enter the reason you are unavailable.']);
+        }
+
+        $this->assertTrue($personnel->refresh()->is_available);
+    }
+
+    public function test_the_reason_field_is_required_on_the_dashboard(): void
+    {
+        $this->withoutVite();
+        $user = User::factory()->create(['role' => UserRole::Personnel]);
+        $this->createPersonnel($user);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Reason for being unavailable')
+            ->assertDontSee('(optional)')
+            ->assertSee('maxlength="500" required', false);
     }
 
     public function test_reason_longer_than_500_characters_is_rejected(): void

@@ -80,11 +80,15 @@
                         <input type="hidden" name="is_available" value="0">
                         <div>
                             <label for="unavailability_reason" class="block text-sm font-bold text-navy">
-                                Reason for being unavailable <span class="text-muted-fg font-normal">(optional)</span>
+                                Reason for being unavailable
                             </label>
-                            <textarea id="unavailability_reason" name="unavailability_reason" rows="3" maxlength="500"
+                            <textarea id="unavailability_reason" name="unavailability_reason" rows="3" maxlength="500" required
+                                      @error('unavailability_reason') aria-invalid="true" aria-describedby="unavailability_reason-error" @enderror
                                       placeholder="e.g. Off duty, sick leave, attending training…"
                                       class="mt-1.5 w-full rounded-xl border border-line px-4 py-3 text-base transition-colors duration-200 focus:border-navy focus:outline-none focus:ring-[3px] focus:ring-navy/10">{{ old('unavailability_reason') }}</textarea>
+                            @error('unavailability_reason')
+                                <p id="unavailability_reason-error" class="mt-1.5 text-sm text-danger">{{ $message }}</p>
+                            @enderror
                         </div>
                         <button class="w-full min-h-11 rounded-xl bg-secondary hover:bg-navy text-white text-sm font-bold px-4 py-2.5 transition-colors duration-200 cursor-pointer">
                             Mark as Unavailable

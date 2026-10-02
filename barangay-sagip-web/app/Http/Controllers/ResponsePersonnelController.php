@@ -185,14 +185,16 @@ class ResponsePersonnelController extends Controller
 
     /**
      * Let the authenticated personnel mark themselves available or
-     * unavailable, optionally explaining why they are unavailable.
+     * unavailable; going unavailable requires saying why.
      * The personnel ID is deliberately not accepted from the request.
      */
     public function updateOwnAvailability(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'is_available' => ['required', 'boolean'],
-            'unavailability_reason' => ['nullable', 'string', 'max:500'],
+            'unavailability_reason' => ['required_if:is_available,0', 'nullable', 'string', 'max:500'],
+        ], [
+            'unavailability_reason.required_if' => 'Enter the reason you are unavailable.',
         ]);
 
         $personnel = ResponsePersonnel::where('user_id', Auth::id())->firstOrFail();
