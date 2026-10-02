@@ -2,6 +2,8 @@
 @section('title', 'Submit a Request — Barangay SAGIP')
 
 @push('head')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
     @keyframes radar-ping {
         0% { transform: scale(0.95); opacity: 0.8; }
@@ -58,10 +60,11 @@
                         <div id="loading-subtitle" class="text-center text-xs text-slate-400 mt-1">Allow location access so we can automatically detect your current position.</div>
                     </div>
 
-                    <iframe id="satellite-map" class="w-full h-full border-0 z-10" src="about:blank"
-                            allowfullscreen="" loading="lazy" title="Current location map"></iframe>
+                    {{-- `relative z-0` keeps Leaflet's own pane z-indexes below the overlays. --}}
+                    <div id="location-map" class="relative z-0 w-full h-full" role="application"
+                         aria-label="Map of your location. Drag the pin or tap the map to set your exact spot."></div>
 
-                    <div class="absolute bottom-3 left-3 right-3 z-20 bg-surface/95 backdrop-blur-md p-3 rounded-lg shadow-lg border border-gray-100 flex items-center space-x-3">
+                    <div class="pointer-events-none absolute bottom-3 left-3 right-3 z-20 bg-surface/95 backdrop-blur-md p-3 rounded-lg shadow-lg border border-gray-100 flex items-center space-x-3">
                         <div class="bg-indigo-600 text-white p-2 rounded-md">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -88,6 +91,22 @@
                 </div>
 
                 <div id="gps-error" class="hidden mt-2 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs p-3"></div>
+                <div id="gps-warning" class="hidden mt-2 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs p-3"></div>
+
+                <div class="mt-3">
+                    <label for="manual-coordinates" class="block text-xs font-medium text-gray-600 mb-1">
+                        Or enter your coordinates
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text" id="manual-coordinates" autocomplete="off"
+                               placeholder="e.g. 13°35'36.9&quot;N 124°12'22.5&quot;E or 13.593583, 124.206250"
+                               class="flex-1 min-w-0 rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-accent focus:ring-accent">
+                        <button type="button" id="apply-coordinates"
+                                class="shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-navy hover:bg-gray-50">
+                            Set pin
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <button id="submit-request" type="submit"
@@ -106,7 +125,16 @@
         const submitButton = document.getElementById('submit-request');
         const latitudeInput = document.getElementById('latitude');
         const longitudeInput = document.getElementById('longitude');
-        const satelliteMap = document.getElementById('satellite-map');
+        const gpsWarning = document.getElementById('gps-warning');
+        const manualCoordinates = document.getElementById('manual-coordinates');
+        const applyCoordinates = document.getElementById('apply-coordinates');
+
+        // A laptop or PC without a GPS chip reports a location guessed from its
+        // internet connection, which can be hundreds of kilometres off. Readings
+        // like that are caught here and the resident places the pin instead.
+        const hall = @js(['lat' => (float) config('sagip.hall.latitude'), 'lng' => (float) config('sagip.hall.longitude')]);
+        const poorAccuracyMeters = @js((int) config('sagip.sos.poor_accuracy_meters', 100));
+        const boundsRadiusMeters = @js((int) config('sagip.sos.bounds_radius_meters', 3000));
         const coordsLabel = document.getElementById('coords-label');
         const retryButton = document.getElementById('retry-location');
         const loadingOverlay = document.getElementById('gps-loading-overlay');
@@ -117,6 +145,118 @@
 
         let watchId = null;
         let latestPosition = null;
+        let pinnedManually = false;
+
+        const map = L.map('location-map').setView([hall.lat, hall.lng], 16);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            // Esri has no imagery past zoom 18 here and serves "Map data not yet available"
+            // tiles instead; stretching zoom-18 tiles keeps the closest zoom level usable.
+            maxNativeZoom: 18,
+            maxZoom: 19,
+            attribution: 'Imagery &copy; Esri',
+        }).addTo(map);
+
+        const marker = L.marker([hall.lat, hall.lng], { draggable: true, keyboard: true, title: 'Your location' });
+        const accuracyCircle = L.circle([hall.lat, hall.lng], {
+            radius: 0, color: '#4f46e5', weight: 1, fillOpacity: 0.12, interactive: false,
+        });
+
+        function setGpsWarning(message) {
+            gpsWarning.textContent = message;
+            gpsWarning.classList.toggle('hidden', !message);
+        }
+
+        function formatDistance(meters) {
+            return meters >= 1000 ? `${(meters / 1000).toFixed(meters >= 10000 ? 0 : 1)} km` : `${Math.round(meters)} m`;
+        }
+
+        function enableSubmit(enabled, label) {
+            submitButton.disabled = !enabled;
+            submitButton.textContent = label;
+        }
+
+        function setLocation(lat, lng) {
+            latitudeInput.value = lat.toFixed(7);
+            longitudeInput.value = lng.toFixed(7);
+            addressDisplay.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            marker.setLatLng([lat, lng]);
+
+            if (!map.hasLayer(marker)) {
+                marker.addTo(map);
+            }
+        }
+
+        // The resident's own pin always wins over later GPS readings.
+        function pinManually(lat, lng) {
+            pinnedManually = true;
+            stopWatching();
+            map.removeLayer(accuracyCircle);
+            setLocation(lat, lng);
+            map.setView([lat, lng], Math.max(map.getZoom(), 17));
+            clearGpsError();
+            hideOverlay();
+
+            const fromHall = map.distance([hall.lat, hall.lng], [lat, lng]);
+            setGpsWarning(fromHall > boundsRadiusMeters
+                ? `This pin is ${formatDistance(fromHall)} from the barangay hall, outside the barangay. Double-check it before submitting.`
+                : '');
+
+            coordsLabel.textContent = 'Location set by you. Drag the pin or tap the map to adjust it.';
+            retryButton.textContent = 'Use device GPS again';
+            retryButton.classList.remove('hidden');
+            enableSubmit(true, 'Submit Request');
+        }
+
+        marker.on('dragend', () => {
+            const { lat, lng } = marker.getLatLng();
+            pinManually(lat, lng);
+        });
+
+        map.on('click', (event) => pinManually(event.latlng.lat, event.latlng.lng));
+
+        /**
+         * Accepts decimal ("13.5936, 124.2063") or degrees-minutes-seconds
+         * (13°35'36.9"N 124°12'22.5"E) coordinates.
+         */
+        function parseCoordinates(text) {
+            const dms = /(\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['′]\s*)?(?:(\d+(?:\.\d+)?)\s*["″]\s*)?([NSEW])/gi;
+            const parts = [...text.matchAll(dms)];
+
+            if (parts.length === 2) {
+                const values = {};
+
+                for (const [, deg, min = 0, sec = 0, hemi] of parts) {
+                    const h = hemi.toUpperCase();
+                    const value = Number(deg) + Number(min) / 60 + Number(sec) / 3600;
+                    values[h === 'N' || h === 'S' ? 'lat' : 'lng'] = h === 'S' || h === 'W' ? -value : value;
+                }
+
+                return values.lat !== undefined && values.lng !== undefined ? values : null;
+            }
+
+            const decimal = text.match(/(-?\d+(?:\.\d+)?)\s*[,\s]\s*(-?\d+(?:\.\d+)?)/);
+
+            return decimal ? { lat: Number(decimal[1]), lng: Number(decimal[2]) } : null;
+        }
+
+        function applyManualCoordinates() {
+            const parsed = parseCoordinates(manualCoordinates.value);
+
+            if (!parsed || Math.abs(parsed.lat) > 90 || Math.abs(parsed.lng) > 180) {
+                setGpsError('Those coordinates could not be read. Use a format like 13.593583, 124.206250.');
+                return;
+            }
+
+            pinManually(parsed.lat, parsed.lng);
+        }
+
+        applyCoordinates.addEventListener('click', applyManualCoordinates);
+        manualCoordinates.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                applyManualCoordinates();
+            }
+        });
 
         function setGpsError(message) {
             gpsError.textContent = message;
@@ -149,34 +289,67 @@
             }
         }
 
-        function updateMap(lat, lng) {
-            satelliteMap.src = `https://maps.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}&t=k&z=19&output=embed`;
-        }
-
         function handlePosition(position) {
+            if (pinnedManually) {
+                return;
+            }
+
             latestPosition = position;
 
             const { latitude, longitude, accuracy } = position.coords;
-
-            latitudeInput.value = latitude.toFixed(7);
-            longitudeInput.value = longitude.toFixed(7);
-            addressDisplay.textContent = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-
-            updateMap(latitude, longitude);
+            const fromHall = map.distance([hall.lat, hall.lng], [latitude, longitude]);
 
             clearGpsError();
             hideOverlay();
+            retryButton.classList.add('hidden');
+
+            // Kilometres outside the barangay: the device is guessing from its
+            // internet connection. Don't submit that; ask for the pin instead.
+            if (fromHall > boundsRadiusMeters) {
+                latitudeInput.value = '';
+                longitudeInput.value = '';
+                addressDisplay.textContent = 'Set your location on the map';
+                map.removeLayer(marker);
+                map.removeLayer(accuracyCircle);
+                map.setView([hall.lat, hall.lng], 16);
+
+                setGpsWarning(
+                    `Your device reported a location ${formatDistance(fromHall)} away from the barangay ` +
+                    `(${latitude.toFixed(4)}, ${longitude.toFixed(4)}, accuracy about ${formatDistance(accuracy)}). ` +
+                    `Computers without GPS often guess their location from the internet connection. ` +
+                    `Tap the map where you are, drag the pin, or enter your coordinates below.`
+                );
+                coordsLabel.textContent = 'Your exact location is required before you can submit.';
+                enableSubmit(false, 'Set Your Location on the Map');
+                return;
+            }
+
+            setLocation(latitude, longitude);
+            accuracyCircle.setLatLng([latitude, longitude]).setRadius(accuracy);
+
+            if (!map.hasLayer(accuracyCircle)) {
+                accuracyCircle.addTo(map);
+            }
+
+            map.setView([latitude, longitude], accuracy > poorAccuracyMeters ? 16 : 18);
+
+            setGpsWarning(accuracy > poorAccuracyMeters
+                ? `Your device's location is only accurate to about ${formatDistance(accuracy)}. ` +
+                  `If the pin is not where you are, drag it or tap your exact spot on the map.`
+                : '');
 
             coordsLabel.textContent =
-                `Live GPS location acquired. Accuracy: approximately ${Math.round(accuracy)} meters. ` +
-                `Location will update automatically while this form remains open.`;
+                `Live GPS location acquired. Accuracy: approximately ${formatDistance(accuracy)}. ` +
+                `It updates automatically until you move the pin yourself.`;
 
-            submitButton.disabled = false;
-            submitButton.textContent = 'Submit Request';
-            retryButton.classList.add('hidden');
+            enableSubmit(true, 'Submit Request');
         }
 
         function handleError(error) {
+            if (pinnedManually) {
+                return;
+            }
+
             latestPosition = null;
             latitudeInput.value = '';
             longitudeInput.value = '';
@@ -196,7 +369,8 @@
             );
 
             addressDisplay.textContent = 'Current location not available';
-            coordsLabel.textContent = 'A valid device GPS location is required before you can submit a report.';
+            coordsLabel.textContent = 'Allow GPS, or set your location by tapping the map or entering your coordinates.';
+            hideOverlay();
             submitButton.disabled = true;
             submitButton.textContent = 'Location Required';
             retryButton.classList.remove('hidden');
@@ -204,6 +378,9 @@
 
         function requestGps() {
             clearGpsError();
+            setGpsWarning('');
+            pinnedManually = false;
+            retryButton.textContent = 'Retry GPS Location';
 
             if (!window.isSecureContext) {
                 setGpsError('GPS access requires a secure HTTPS connection. Open Barangay SAGIP through its HTTPS Herd address.');
@@ -249,9 +426,13 @@
         retryButton.addEventListener('click', requestGps);
 
         form.addEventListener('submit', (event) => {
-            if (!latestPosition || !latitudeInput.value || !longitudeInput.value) {
+            if (!latitudeInput.value || !longitudeInput.value) {
                 event.preventDefault();
-                requestGps();
+
+                if (!pinnedManually && !latestPosition) {
+                    requestGps();
+                }
+
                 return;
             }
 
