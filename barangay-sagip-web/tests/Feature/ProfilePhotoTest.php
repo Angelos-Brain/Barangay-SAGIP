@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Http\Requests\UpdateProfilePhotoRequest;
 use App\Models\ResponsePersonnel;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -43,7 +44,7 @@ class ProfilePhotoTest extends TestCase
         $this->actingAs($user)->get(route('account.photo.edit'))->assertOk();
 
         $this->actingAs($user)
-            ->put(route('account.photo.update'), ['photo' => UploadedFile::fake()->image('me.jpg', 200, 200)])
+            ->put(route('account.photo.update'), ['photo' => $this->capture()])
             ->assertRedirect()
             ->assertSessionHasNoErrors();
 
@@ -58,10 +59,10 @@ class ProfilePhotoTest extends TestCase
     {
         $user = User::factory()->create(['role' => UserRole::Resident]);
 
-        $this->actingAs($user)->put(route('account.photo.update'), ['photo' => UploadedFile::fake()->image('first.png')]);
+        $this->actingAs($user)->put(route('account.photo.update'), ['photo' => $this->capture()]);
         $firstPath = $user->fresh()->profile_photo_path;
 
-        $this->actingAs($user)->put(route('account.photo.update'), ['photo' => UploadedFile::fake()->image('second.webp')]);
+        $this->actingAs($user)->put(route('account.photo.update'), ['photo' => $this->capture()]);
         $secondPath = $user->fresh()->profile_photo_path;
 
         $this->assertNotSame($firstPath, $secondPath);
@@ -75,12 +76,13 @@ class ProfilePhotoTest extends TestCase
     public static function invalidPhotos(): array
     {
         return [
-            'wrong type' => [fn () => UploadedFile::fake()->create('scan.pdf', 100, 'application/pdf'), 'JPG, PNG, or WebP'],
-            'gif not allowed' => [fn () => UploadedFile::fake()->image('anim.gif'), 'JPG, PNG, or WebP'],
-            'too large' => [fn () => UploadedFile::fake()->image('big.jpg')->size(3000), '2 MB or smaller'],
-            'text renamed to jpg' => [fn () => UploadedFile::fake()->createWithContent('broken.jpg', 'this is not really an image'), 'could not be read as an image'],
-            'truncated jpeg' => [fn () => UploadedFile::fake()->createWithContent('truncated.jpg', "\xFF\xD8\xFF\xE0\x00\x10JFIF\x00".str_repeat("\x00", 64)), 'could not be read as an image'],
-            'missing' => [fn () => null, 'Choose a photo'],
+            'wrong type' => [fn () => UploadedFile::fake()->create('scan.pdf', 100, 'application/pdf'), 'camera face capture'],
+            'png gallery photo' => [fn () => UploadedFile::fake()->image('gallery.png', 512, 512), 'camera face capture'],
+            'jpeg not from the capture' => [fn () => UploadedFile::fake()->image('gallery.jpg', 1080, 1440), 'camera face capture'],
+            'too large' => [fn () => UploadedFile::fake()->image('big.jpg', 512, 512)->size(3000), '2 MB or smaller'],
+            'text renamed to jpg' => [fn () => UploadedFile::fake()->createWithContent('broken.jpg', 'this is not really an image'), 'camera face capture'],
+            'truncated jpeg' => [fn () => UploadedFile::fake()->createWithContent('truncated.jpg', "\xFF\xD8\xFF\xE0\x00\x10JFIF\x00".str_repeat("\x00", 64)), 'camera face capture'],
+            'missing' => [fn () => null, 'Take a face photo'],
         ];
     }
 
@@ -105,7 +107,7 @@ class ProfilePhotoTest extends TestCase
 
     public function test_guests_cannot_upload_photos(): void
     {
-        $this->put(route('account.photo.update'), ['photo' => UploadedFile::fake()->image('me.jpg')])
+        $this->put(route('account.photo.update'), ['photo' => $this->capture()])
             ->assertRedirect(route('login'));
     }
 
@@ -115,10 +117,10 @@ class ProfilePhotoTest extends TestCase
         $personnelUser = User::factory()->create(['role' => UserRole::Personnel]);
         $personnel = $this->makePersonnel($personnelUser);
 
-        $this->actingAs($official)->get(route('personnel.edit', $personnel))->assertOk()->assertSee('Upload Photo');
+        $this->actingAs($official)->get(route('personnel.edit', $personnel))->assertOk()->assertSee('Take Face Photo');
 
         $this->actingAs($official)
-            ->put(route('personnel.photo.update', $personnel), ['photo' => UploadedFile::fake()->image('responder.jpg')])
+            ->put(route('personnel.photo.update', $personnel), ['photo' => $this->capture()])
             ->assertRedirect()
             ->assertSessionHasNoErrors();
 
@@ -136,7 +138,7 @@ class ProfilePhotoTest extends TestCase
         $personnel = $this->makePersonnel(null);
 
         $this->actingAs($official)
-            ->put(route('personnel.photo.update', $personnel), ['photo' => UploadedFile::fake()->image('responder.jpg')])
+            ->put(route('personnel.photo.update', $personnel), ['photo' => $this->capture()])
             ->assertStatus(422);
 
         $this->assertEmpty(Storage::disk('public')->allFiles());
@@ -150,7 +152,7 @@ class ProfilePhotoTest extends TestCase
         $personnel = $this->makePersonnel($personnelUser);
 
         $this->actingAs($actor)
-            ->put(route('personnel.photo.update', $personnel), ['photo' => UploadedFile::fake()->image('x.jpg')])
+            ->put(route('personnel.photo.update', $personnel), ['photo' => $this->capture()])
             ->assertForbidden();
 
         $this->assertNull($personnelUser->fresh()->profile_photo_path);
@@ -173,7 +175,7 @@ class ProfilePhotoTest extends TestCase
         $victim = User::factory()->create(['role' => UserRole::Resident]);
 
         $this->actingAs($attacker)->put(route('account.photo.update'), [
-            'photo' => UploadedFile::fake()->image('x.jpg'),
+            'photo' => $this->capture(),
             'user_id' => $victim->id,
         ]);
 
@@ -186,6 +188,25 @@ class ProfilePhotoTest extends TestCase
         $user = User::factory()->create(['role' => UserRole::Personnel, 'name' => 'Juan Dela Cruz']);
 
         $this->actingAs($user)->get(route('account.photo.edit'))->assertOk()->assertSee('JD');
+    }
+
+    public function test_photo_form_offers_camera_capture_only(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Resident]);
+
+        $this->actingAs($user)
+            ->get(route('account.photo.edit'))
+            ->assertSee('Take Face Photo')
+            ->assertSee('faceCapture', false)
+            ->assertDontSee('accept="image/jpeg,image/png,image/webp"', false);
+    }
+
+    /**
+     * Mirrors what the camera face capture submits: a square JPEG of the capture size.
+     */
+    private function capture(): UploadedFile
+    {
+        return UploadedFile::fake()->image('face.jpg', UpdateProfilePhotoRequest::CAPTURE_SIZE, UpdateProfilePhotoRequest::CAPTURE_SIZE);
     }
 
     private function makePersonnel(?User $user): ResponsePersonnel
