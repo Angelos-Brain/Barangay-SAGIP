@@ -43,7 +43,7 @@ class RegistrationEmailValidationTest extends TestCase
     public function test_a_well_formed_address_is_accepted(): void
     {
         $this->post(route('register'), $this->payload('juan.delacruz@gmail.com'))
-            ->assertRedirect(route('residents.profile.edit'));
+            ->assertRedirect(route('verification.notice'));
 
         $this->assertDatabaseHas('users', ['email' => 'juan.delacruz@gmail.com']);
     }
@@ -51,7 +51,7 @@ class RegistrationEmailValidationTest extends TestCase
     public function test_plus_addressing_is_still_accepted(): void
     {
         $this->post(route('register'), $this->payload('juan+sagip@gmail.com'))
-            ->assertRedirect(route('residents.profile.edit'));
+            ->assertRedirect(route('verification.notice'));
 
         $this->assertDatabaseHas('users', ['email' => 'juan+sagip@gmail.com']);
     }
@@ -82,7 +82,7 @@ class RegistrationEmailValidationTest extends TestCase
     public function test_surrounding_whitespace_is_trimmed_rather_than_rejected(): void
     {
         $this->post(route('register'), $this->payload('  juan.delacruz@gmail.com  '))
-            ->assertRedirect(route('residents.profile.edit'));
+            ->assertRedirect(route('verification.notice'));
 
         $this->assertDatabaseHas('users', ['email' => 'juan.delacruz@gmail.com']);
     }
@@ -113,12 +113,46 @@ class RegistrationEmailValidationTest extends TestCase
     public function test_a_duplicate_address_is_still_rejected(): void
     {
         $this->post(route('register'), $this->payload('juan.delacruz@gmail.com'));
-        $this->post(route('logout'));
 
         $this->from(route('register'))
             ->post(route('register'), $this->payload('juan.delacruz@gmail.com'))
             ->assertSessionHasErrors('email');
 
         $this->assertSame(1, User::where('email', 'juan.delacruz@gmail.com')->count());
+    }
+
+    public function test_non_gmail_addresses_are_rejected_with_a_clear_message(): void
+    {
+        foreach (['juan@yahoo.com', 'juan@outlook.com', 'juan@gmail.com.ph', 'juan@googlemail.com', 'juan@mail.gmail.com'] as $email) {
+            $this->from(route('register'))
+                ->post(route('register'), $this->payload($email))
+                ->assertSessionHasErrors(['email' => 'Please use a Gmail address (example@gmail.com).']);
+
+            $this->assertDatabaseMissing('users', ['email' => $email]);
+        }
+    }
+
+    public function test_uppercase_input_is_lowercased_rather_than_rejected(): void
+    {
+        $this->post(route('register'), $this->payload('Juan.DelaCruz@Gmail.com'))
+            ->assertRedirect(route('verification.notice'));
+
+        $this->assertDatabaseHas('users', ['email' => 'juan.delacruz@gmail.com', 'email_canonical' => 'juandelacruz@gmail.com']);
+    }
+
+    public function test_dots_and_plus_tags_cannot_register_the_same_inbox_twice(): void
+    {
+        $this->post(route('register'), $this->payload('john.doe+x@gmail.com'))
+            ->assertRedirect(route('verification.notice'));
+
+        foreach (['johndoe@gmail.com', 'j.o.h.n.d.o.e@gmail.com', 'johndoe+sagip@gmail.com'] as $email) {
+            $this->from(route('register'))
+                ->post(route('register'), $this->payload($email))
+                ->assertSessionHasErrors('email');
+        }
+
+        $this->assertSame(1, User::where('email_canonical', 'johndoe@gmail.com')->count());
+        // Stored as typed, so mail goes to the address the resident entered.
+        $this->assertDatabaseHas('users', ['email' => 'john.doe+x@gmail.com']);
     }
 }

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,15 +17,15 @@ class ResidentRegistrationTest extends TestCase
             'first_name' => 'Juan',
             'middle_name' => 'Padin',
             'last_name' => 'Dela Cruz',
-            'email' => 'juan@example.com',
+            'email' => 'juan@gmail.com',
             'phone_number' => '09171234567',
             'address' => '225, Provincial Road, Calatagan Tibang, Virac, Catanduanes',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
-        ])->assertRedirect(route('residents.profile.edit'));
+        ])->assertRedirect(route('verification.notice'));
 
         $this->assertDatabaseHas('users', [
-            'email' => 'juan@example.com',
+            'email' => 'juan@gmail.com',
             'role' => UserRole::Resident->value,
         ]);
 
@@ -68,7 +69,7 @@ class ResidentRegistrationTest extends TestCase
 
     public function test_profile_update_also_rejects_an_incomplete_address(): void
     {
-        $resident = \App\Models\User::factory()->create(['role' => UserRole::Resident]);
+        $resident = User::factory()->create(['role' => UserRole::Resident]);
 
         $this->actingAs($resident)
             ->from(route('residents.profile.edit'))

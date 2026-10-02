@@ -39,7 +39,7 @@ class PersonnelSpecializationTest extends TestCase
         $this->actingAs($official)
             ->post(route('personnel.store'), [
                 'name' => 'Multi Responder',
-                'email' => 'multi.responder@example.com',
+                'email' => 'multi.responder@gmail.com',
                 'specializations' => ['medical', 'disaster'],
                 'phone_number' => '09170000123',
                 'latitude' => 13.5920,

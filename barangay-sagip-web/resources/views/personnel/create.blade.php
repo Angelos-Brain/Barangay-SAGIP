@@ -20,10 +20,12 @@
             <x-specialization-picker :specializations="$specializations" />
         </div>
         <div>
-            <label for="email" class="block text-sm font-medium mb-1">Email</label>
-            <input type="email" name="email" id="email" value="{{ old('email') }}" required
+            <label for="email" class="block text-sm font-medium mb-1">Gmail Address</label>
+            <input type="email" name="email" id="email" value="{{ old('email') }}" required data-gmail-only placeholder="example@gmail.com"
                    class="w-full rounded-md border border-gray-300 px-3 py-2 sm:border-0 sm:p-0 shadow-sm focus:border-accent focus:ring-accent">
             @error('email')<p class="text-xs text-red-600 mt-1">{{ $message }}</p>@enderror
+            <p class="text-xs text-gray-500 mt-1">The responder's setup link is emailed here.</p>
+            <x-gmail-only-script />
         </div>
         <div>
             <label for="phone_number" class="block text-sm font-medium mb-1">Mobile Number</label>

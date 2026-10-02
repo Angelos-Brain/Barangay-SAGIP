@@ -61,29 +61,31 @@ class UserFactory extends Factory
     }
 
     /**
-     * A responder who verified their mobile number but has not yet chosen a
-     * password or confirmed their email.
+     * A responder who opened their emailed verification link but has not yet
+     * chosen a password.
      */
     public function needsAccountSetup(): static
     {
         return $this->state(fn (array $attributes) => [
             'account_setup_completed_at' => null,
-            'email_verified_at' => null,
         ]);
     }
 
     /**
-     * A responder record an official added that nobody has claimed yet.
+     * A responder record an official added that nobody has claimed yet: the
+     * emailed link has not been opened and no password is chosen.
      */
     public function unclaimed(): static
     {
         return $this->needsAccountSetup()->state(fn (array $attributes) => [
+            'email_verified_at' => null,
             'phone_verified_at' => null,
         ]);
     }
 
     /**
-     * A responder who chose a password but has not clicked the email link.
+     * A responder who chose a password under the earlier SMS flow but never
+     * opened the email link; they must verify by link before signing in.
      */
     public function awaitingEmailConfirmation(): static
     {

@@ -5,19 +5,25 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\ResidentAwaitingVerification;
 use App\Rules\DeliverableEmail;
+use App\Rules\GmailAddress;
+use App\Rules\UniqueEmailInbox;
+use App\Services\EmailLinkService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
+    public function __construct(protected EmailLinkService $links) {}
+
     public function create(): View
     {
         return view('auth.register');
@@ -25,10 +31,13 @@ class RegisteredUserController extends Controller
 
     /**
      * Handles resident account creation and captures the resident's complete
-     * home address as the required registration address.
+     * home address as the required registration address. The account starts
+     * unverified and is not signed in until the emailed link is opened.
      */
     public function store(Request $request): RedirectResponse
     {
+        $request->merge(['email' => GmailAddress::normalize((string) $request->input('email'))]);
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100', 'regex:/^\p{Lu}[\p{L}\'-]*(\s\p{Lu}[\p{L}\'-]*)*$/u'],
             'middle_name' => ['nullable', 'string', 'max:100', 'regex:/^(\p{Lu}[\p{L}\'-]*(\s\p{Lu}[\p{L}\'-]*)*)?$/u'],
@@ -40,7 +49,8 @@ class RegisteredUserController extends Controller
                 'max:255',
                 $this->emailFormatRule(),
                 new DeliverableEmail,
-                'unique:users,email',
+                new GmailAddress,
+                new UniqueEmailInbox,
             ],
             'phone_number' => ['required', 'string', 'max:30'],
             'address' => [
@@ -84,11 +94,18 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        Notification::send(
+            User::whereIn('role', [UserRole::Official->value, UserRole::Admin->value])->get(),
+            new ResidentAwaitingVerification($user),
+        );
 
-        return redirect()->route('residents.profile.edit')
-            ->with('status', 'Account created! Your home address was saved. Please complete the rest of your resident profile.');
+        return EmailVerificationController::redirectToNotice(
+            $request,
+            $user,
+            $this->links->send($user)
+                ? 'Account created! Open the link we emailed you to verify your account.'
+                : 'Account created, but we could not send the verification email right now. Use the button below to send it again.',
+        );
     }
 
     /**

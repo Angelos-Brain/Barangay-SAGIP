@@ -10,8 +10,10 @@ use App\Enums\UserRole;
 use App\Enums\VerificationStatus;
 use App\Enums\VulnerabilityTag;
 use App\Models\Concerns\Auditable;
+use App\Rules\GmailAddress;
 use App\Services\ProfilePhotoService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -60,6 +62,27 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Saved trimmed and lowercased, with the inbox it delivers to kept
+     * alongside in `email_canonical` for duplicate checks and sign-in.
+     */
+    protected function email(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => $value === null
+                ? ['email' => null, 'email_canonical' => null]
+                : ['email' => GmailAddress::normalize($value), 'email_canonical' => GmailAddress::canonical($value)],
+        );
+    }
+
+    /**
+     * Whether this account has clicked the emailed verification link.
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
     public function residentProfile()
     {
         return $this->hasOne(ResidentProfile::class);
@@ -105,9 +128,8 @@ class User extends Authenticatable
     }
 
     /**
-     * A responder added by an official must finish First Login — verify their
-     * mobile number, choose a password, and confirm their email — before
-     * using the app.
+     * A responder added by an official must finish First Login — open the
+     * emailed verification link, then choose a password — before using the app.
      */
     public function needsAccountSetup(): bool
     {
@@ -116,12 +138,12 @@ class User extends Authenticatable
 
     public function personnelAccountStatus(): PersonnelAccountStatus
     {
-        if ($this->phone_verified_at === null) {
+        if (! $this->hasVerifiedEmail()) {
             return PersonnelAccountStatus::Unclaimed;
         }
 
-        if ($this->account_setup_completed_at === null || $this->email_verified_at === null) {
-            return PersonnelAccountStatus::PhoneVerified;
+        if (! $this->hasChosenPassword()) {
+            return PersonnelAccountStatus::EmailVerified;
         }
 
         return PersonnelAccountStatus::Active;
@@ -137,15 +159,12 @@ class User extends Authenticatable
     }
 
     /**
-     * The First Login step a signed-in responder should resume at.
+     * The First Login step a signed-in responder should resume at. Only a
+     * verified email signs a responder in, so the email step is never due here.
      */
     public function nextAccountSetupRoute(): string
     {
-        return match (true) {
-            ! $this->hasChosenPassword() => 'account.setup.password',
-            $this->email_verified_at === null => 'account.setup.email',
-            default => 'account.setup.ready',
-        };
+        return $this->hasChosenPassword() ? 'account.setup.ready' : 'account.setup.password';
     }
 
     public function isOfficial(): bool

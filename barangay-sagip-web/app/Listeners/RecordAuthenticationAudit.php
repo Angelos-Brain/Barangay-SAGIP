@@ -55,7 +55,8 @@ class RecordAuthenticationAudit
      */
     public function recordFailure(Failed $event): void
     {
-        $email = $event->credentials['email'] ?? null;
+        // Resident sign-in matches on the inbox, so it passes `email_canonical`.
+        $email = $event->credentials['email'] ?? $event->credentials['email_canonical'] ?? null;
 
         $this->auditLogger->record(
             action: 'auth.failed',

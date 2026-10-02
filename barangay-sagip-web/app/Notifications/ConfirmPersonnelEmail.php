@@ -6,9 +6,10 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * First Login, step 4: the link a responder clicks to confirm their email and
- * activate their account. Sent immediately rather than queued — the
- * responder is waiting on the screen for it.
+ * First Login: the link a responder opens to verify their email. It signs
+ * them in to choose their password, which activates the account. Sent when an
+ * official adds the responder and again on request; immediately rather than
+ * queued, since the responder may be waiting on the screen for it.
  */
 class ConfirmPersonnelEmail extends Notification
 {
@@ -25,10 +26,10 @@ class ConfirmPersonnelEmail extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('[SAGIP] Confirm your email to activate your responder account')
+            ->subject('[SAGIP] Verify your email to set up your responder account')
             ->greeting(sprintf('Hi %s,', $notifiable->name))
-            ->line('Confirm this email address to finish setting up your Barangay SAGIP responder account.')
-            ->action('Confirm Email', $this->confirmationUrl)
+            ->line('Your barangay added you as Barangay SAGIP response personnel. Verify this email address, then choose your password to activate your account.')
+            ->action('Verify Email and Set Up Account', $this->confirmationUrl)
             ->line(sprintf('This link works once and expires in %d hours.', $this->expiresInHours))
             ->line('If you did not set up a Barangay SAGIP account, ignore this email and tell your barangay admin.');
     }

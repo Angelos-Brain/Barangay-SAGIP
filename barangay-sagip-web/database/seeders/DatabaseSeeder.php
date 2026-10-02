@@ -61,6 +61,9 @@ class DatabaseSeeder extends Seeder
                 'verified_by' => $official->id,
             ]
         );
+        // Demo accounts skip the emailed verification link.
+        $resident->email_verified_at ??= now();
+        $resident->save();
 
         $resident->residentProfile()->firstOrCreate(
             ['user_id' => $resident->id],
@@ -87,6 +90,8 @@ class DatabaseSeeder extends Seeder
                 'verification_status' => VerificationStatus::Pending,
             ]
         );
+        $pendingResident->email_verified_at ??= now();
+        $pendingResident->save();
 
         $pendingResident->residentProfile()->firstOrCreate(
             ['user_id' => $pendingResident->id],

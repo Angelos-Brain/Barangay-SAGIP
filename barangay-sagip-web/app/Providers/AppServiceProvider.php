@@ -60,12 +60,10 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
-        // Personnel sign-in, SMS code checks, and email links. Loose enough that
-        // the controller's own 5-strike lockout is what people actually hit.
+        // Personnel sign-in and opening emailed links. Loose enough that the
+        // controller's own 5-strike lockout is what people actually hit.
         RateLimiter::for('personnel-login', function (Request $request) {
-            $identifier = strtolower((string) ($request->input('identifier')
-                ?? $request->session()->get('personnel_setup.phone')
-                ?? $request->session()->get('personnel_reset.phone')));
+            $identifier = strtolower((string) $request->input('email'));
 
             return [
                 Limit::perMinute(10)->by('login:'.$identifier.'|'.$request->ip()),
@@ -73,17 +71,16 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
-        // Anything that texts a code or emails a link, per phone and per IP.
-        RateLimiter::for('personnel-code', function (Request $request) {
-            $phone = (string) ($request->input('phone_number')
-                ?? $request->session()->get('personnel_setup.phone')
-                ?? $request->session()->get('personnel_reset.phone')
-                ?? $request->user()?->id);
+        // Anything that emails a verification or reset link, per address and per IP.
+        // The 60-second resend cooldown in EmailLinkService applies on top.
+        RateLimiter::for('email-link', function (Request $request) {
+            $target = strtolower(trim((string) ($request->input('email')
+                ?? $request->session()->get('email_verification.user_id'))));
 
             return [
-                Limit::perMinute(3)->by('code:'.$phone.'|'.$request->ip()),
-                Limit::perHour(10)->by('code-phone:'.$phone),
-                Limit::perMinute(10)->by('code-ip:'.$request->ip()),
+                Limit::perMinute(3)->by('link:'.$target.'|'.$request->ip()),
+                Limit::perHour(10)->by('link-target:'.$target),
+                Limit::perMinute(10)->by('link-ip:'.$request->ip()),
             ];
         });
 

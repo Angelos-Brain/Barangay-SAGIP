@@ -3,7 +3,7 @@
 
 @section('content')
 <x-auth-back-link :href="route('home')" label="Back to home" />
-<x-onboarding-steps :current="5" />
+<x-onboarding-steps :current="4" />
 
 <div class="text-center">
     <span class="mx-auto h-14 w-14 rounded-full bg-success/10 text-success inline-flex items-center justify-center">
@@ -11,7 +11,7 @@
     </span>
     <h2 class="mt-4 text-2xl font-bold text-navy">Your account is ready</h2>
     <p class="mt-1.5 text-sm text-muted-fg">
-        Thanks, {{ $user->name }}. Your email is confirmed. Next time, sign in with your email or mobile number and your password.
+        Thanks, {{ $user->name }}. Your email is verified and your password is set. Next time, sign in with your email and password.
     </p>
 </div>
 

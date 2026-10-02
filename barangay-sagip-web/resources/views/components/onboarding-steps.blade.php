@@ -1,11 +1,11 @@
 {{--
-    First Login progress: Phone → Verify → Password → Email → Ready.
+    First Login progress: Email → Verify → Password → Ready.
     `current` is the 1-based step on screen; earlier steps show as done.
 --}}
 @props(['current'])
 
 @php
-    $steps = ['Phone', 'Verify', 'Password', 'Email', 'Ready'];
+    $steps = ['Email', 'Verify', 'Password', 'Ready'];
 @endphp
 
 <nav aria-label="Account setup progress" class="mb-6">

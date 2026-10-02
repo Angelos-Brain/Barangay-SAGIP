@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Enums\Specialization;
 use App\Enums\UserRole;
 use App\Enums\VerificationStatus;
-use App\Models\OutboundSmsMessage;
 use App\Models\ResponsePersonnel;
 use App\Models\User;
+use App\Rules\GmailAddress;
 use App\Rules\PhilippineMobileNumber;
-use App\Services\Sms\SmsDispatcher;
+use App\Rules\UniqueEmailInbox;
+use App\Services\EmailLinkService;
 use App\Services\TanodDutyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class ResponsePersonnelController extends Controller
 {
     public function __construct(
         protected TanodDutyService $dutyService,
-        protected SmsDispatcher $smsDispatcher,
+        protected EmailLinkService $links,
     ) {}
 
     public function index(): View
@@ -45,17 +46,18 @@ class ResponsePersonnelController extends Controller
     }
 
     /**
-     * Adding a responder also opens their (unclaimed) login account. They claim
-     * it through First Login at /personnel/setup with this mobile number, and
-     * choose their own password there — none is ever set or handed over.
+     * Adding a responder also opens their (unclaimed) login account and emails
+     * them a verification link. Opening it claims the account, and they choose
+     * their own password there — none is ever set or handed over.
      */
     public function store(Request $request): RedirectResponse
     {
         $this->normalizePhoneInput($request);
+        $request->merge(['email' => GmailAddress::normalize((string) $request->input('email'))]);
 
         $validated = $request->validate($this->specializationRules() + [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', new GmailAddress, new UniqueEmailInbox],
             'phone_number' => ['required', 'string', new PhilippineMobileNumber, 'unique:users,phone_number'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
@@ -82,20 +84,9 @@ class ResponsePersonnelController extends Controller
             ]);
         });
 
-        $message = $this->smsDispatcher->dispatch(
-            recipient: $personnel->user->phone_number,
-            body: sprintf(
-                'Hi %s, your Barangay SAGIP responder account is ready to set up. Go to %s and enter this mobile number to get started.',
-                $personnel->name,
-                route('personnel.setup'),
-            ),
-            purpose: OutboundSmsMessage::PURPOSE_ACCOUNT_CREATED,
-            user: $personnel->user,
-        );
-
-        return redirect()->route('personnel.index')->with('status', $message->wasSent()
-            ? "{$personnel->name} added. Login instructions were texted to {$personnel->user->phone_number}."
-            : "{$personnel->name} added, but the SMS could not be sent. Tell them to set up their account at /personnel/setup with {$personnel->user->phone_number}.");
+        return redirect()->route('personnel.index')->with('status', $this->links->send($personnel->user)
+            ? "{$personnel->name} added. A setup link was emailed to {$personnel->user->email}."
+            : "{$personnel->name} added, but the setup email could not be sent. Tell them to request a new link at /personnel/setup with {$personnel->user->email}.");
     }
 
     public function edit(ResponsePersonnel $personnel): View
@@ -110,7 +101,7 @@ class ResponsePersonnelController extends Controller
     {
         $this->normalizePhoneInput($request);
 
-        // A responder with a login needs a valid mobile number — it IS their login.
+        // A responder with a login keeps a valid mobile number on file.
         $validated = $request->validate($this->specializationRules() + [
             'name' => ['required', 'string', 'max:255'],
             'phone_number' => $personnel->user_id === null

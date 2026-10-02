@@ -6,13 +6,13 @@
 
 <p class="text-xs font-bold tracking-wider text-accent uppercase mb-1">Response Personnel</p>
 <h2 class="text-2xl font-bold text-navy">Barangay SAGIP</h2>
-<p class="mt-1.5 text-sm text-muted-fg mb-8">Sign in with your email or mobile number and your password.</p>
+<p class="mt-1.5 text-sm text-muted-fg mb-8">Sign in with your email and password.</p>
 
 <form method="POST" action="{{ route('personnel.login.store') }}" class="space-y-5" novalidate>
     @csrf
 
-    <x-auth-field label="Email or Mobile Number" name="identifier" :value="old('identifier')"
-                  placeholder="you@example.com or 09XXXXXXXXX" autocomplete="username" autocapitalize="none" autofocus />
+    <x-auth-field label="Email" name="email" type="email" :value="old('email')"
+                  placeholder="example@gmail.com" autocomplete="username" autocapitalize="none" autofocus />
     <x-auth-field label="Password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" />
 
     <div class="flex justify-end -mt-2">
@@ -26,7 +26,7 @@
 
 <div class="mt-6 rounded-xl bg-muted/60 border border-line px-4 py-3 text-sm text-muted-fg">
     <p class="font-bold text-navy">First time signing in?</p>
-    <p class="mt-0.5">Your barangay admin registered your mobile number.
+    <p class="mt-0.5">Your barangay admin registered your email.
         <a href="{{ route('personnel.setup') }}" class="font-bold text-accent hover:underline">Set up your account</a>
     </p>
 </div>

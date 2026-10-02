@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountVerificationController;
 use App\Http\Controllers\Admin\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\PersonnelAccountSetupController;
 use App\Http\Controllers\Auth\PersonnelLoginController;
 use App\Http\Controllers\Auth\PersonnelOnboardingController;
@@ -41,52 +42,45 @@ Route::middleware('guest')->group(function () {
         ->middleware('throttle:login')->name('admin.login.store');
 });
 
-// Response personnel. First Login (once): mobile number -> SMS code, then the
-// password and email steps below. Afterwards: email or mobile + password.
+// Response personnel. First Login (once): the emailed verification link, then
+// the password step below. Afterwards: email + password.
 Route::middleware('guest')->group(function () {
     Route::get('personnel/login', [PersonnelLoginController::class, 'create'])->name('personnel.login');
     Route::post('personnel/login', [PersonnelLoginController::class, 'store'])
         ->middleware('throttle:personnel-login')->name('personnel.login.store');
 
     Route::get('personnel/setup', [PersonnelOnboardingController::class, 'create'])->name('personnel.setup');
-    Route::get('personnel/setup/verify', [PersonnelOnboardingController::class, 'showVerify'])->name('personnel.setup.verify');
 
     Route::get('personnel/password/forgot', [PersonnelPasswordResetController::class, 'create'])->name('personnel.password.request');
-    Route::get('personnel/password/verify', [PersonnelPasswordResetController::class, 'showVerify'])->name('personnel.password.verify');
+    Route::get('personnel/password/reset/{user}/{token}', [PersonnelPasswordResetController::class, 'openLink'])
+        ->middleware('throttle:personnel-login')->name('personnel.password.link');
     Route::get('personnel/password/reset', [PersonnelPasswordResetController::class, 'edit'])->name('personnel.password.reset');
     Route::post('personnel/password/reset', [PersonnelPasswordResetController::class, 'update'])->name('personnel.password.update');
 
-    Route::middleware('throttle:personnel-code')->group(function () {
-        Route::post('personnel/setup', [PersonnelOnboardingController::class, 'sendCode'])->name('personnel.setup.send');
-        Route::post('personnel/setup/resend', [PersonnelOnboardingController::class, 'resend'])->name('personnel.setup.resend');
-        Route::post('personnel/password/forgot', [PersonnelPasswordResetController::class, 'sendCode'])->name('personnel.password.send');
-        Route::post('personnel/password/resend', [PersonnelPasswordResetController::class, 'resend'])->name('personnel.password.resend');
-    });
-
-    Route::middleware('throttle:personnel-login')->group(function () {
-        Route::post('personnel/setup/verify', [PersonnelOnboardingController::class, 'verify'])->name('personnel.setup.check');
-        Route::post('personnel/password/verify', [PersonnelPasswordResetController::class, 'verify'])->name('personnel.password.check');
+    Route::middleware('throttle:email-link')->group(function () {
+        Route::post('personnel/setup', [PersonnelOnboardingController::class, 'sendLink'])->name('personnel.setup.send');
+        Route::post('personnel/password/forgot', [PersonnelPasswordResetController::class, 'sendLink'])->name('personnel.password.send');
     });
 });
 
-// The emailed confirmation link may be opened signed in or not, on any device.
-Route::get('personnel/email/confirm/{user}/{token}', [PersonnelAccountSetupController::class, 'confirmEmail'])
-    ->middleware('throttle:personnel-login')->name('personnel.email.confirm');
+// Email verification for residents and personnel. The "Check your Gmail"
+// screen and its resend button serve accounts that are not signed in, and the
+// emailed link may be opened signed in or not, on any device.
+Route::get('email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+Route::post('email/verify/resend', [EmailVerificationController::class, 'resend'])
+    ->middleware('throttle:email-link')->name('verification.send');
+Route::get('email/verify/{user}/{token}', [EmailVerificationController::class, 'verify'])
+    ->middleware('throttle:personnel-login')->name('verification.verify');
 
 Route::post('admin/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')->name('admin.logout');
 
 Route::middleware('auth')->group(function () {
-    // First Login, after the SMS step: password, email confirmation, ready.
+    // First Login, after the emailed link signed the responder in: password, ready.
     // EnsurePersonnelAccountSetup keeps an unfinished account on these screens.
     Route::get('account/setup', [PersonnelAccountSetupController::class, 'index'])->name('account.setup');
     Route::get('account/setup/password', [PersonnelAccountSetupController::class, 'editPassword'])->name('account.setup.password');
     Route::post('account/setup/password', [PersonnelAccountSetupController::class, 'updatePassword'])->name('account.setup.password.store');
-    Route::get('account/setup/email', [PersonnelAccountSetupController::class, 'editEmail'])->name('account.setup.email');
-    Route::middleware('throttle:personnel-code')->group(function () {
-        Route::post('account/setup/email', [PersonnelAccountSetupController::class, 'sendEmail'])->name('account.setup.email.store');
-        Route::post('account/setup/email/resend', [PersonnelAccountSetupController::class, 'resendEmail'])->name('account.setup.email.resend');
-    });
     Route::get('account/setup/ready', [PersonnelAccountSetupController::class, 'ready'])->name('account.setup.ready');
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -112,6 +106,7 @@ Route::middleware('auth')->group(function () {
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+    Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::get('account/verification', [AccountVerificationController::class, 'pending'])
         ->name('account.verification.pending');
 

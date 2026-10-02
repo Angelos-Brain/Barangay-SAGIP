@@ -76,7 +76,7 @@ class PageSmokeTest extends TestCase
         $this->assertAuthenticated();
         $this->post(route('admin.logout'));
 
-        $this->post(route('personnel.login.store'), ['identifier' => 'personnel@sagip.test', 'password' => 'password'])
+        $this->post(route('personnel.login.store'), ['email' => 'personnel@sagip.test', 'password' => 'password'])
             ->assertRedirect(route('dashboard'));
         $this->assertAuthenticated();
         $this->post(route('admin.logout'));

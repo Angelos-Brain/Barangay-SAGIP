@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Rules\GmailAddress;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,13 @@ class AuthenticatedSessionController extends Controller
             'password' => ['required'],
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        // Matched on the inbox, so john.doe@gmail.com signs in to johndoe@gmail.com.
+        $attempt = [
+            'email_canonical' => GmailAddress::canonical($credentials['email']),
+            'password' => $credentials['password'],
+        ];
+
+        if (! Auth::attempt($attempt, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
@@ -37,6 +44,18 @@ class AuthenticatedSessionController extends Controller
             throw ValidationException::withMessages([
                 'email' => 'This login is for residents. Barangay staff should use the staff login.',
             ]);
+        }
+
+        // An unverified resident is never signed in; they verify by email first.
+        if (! Auth::user()->hasVerifiedEmail()) {
+            $user = Auth::user();
+            Auth::logout();
+
+            return EmailVerificationController::redirectToNotice(
+                $request,
+                $user,
+                'Check your Gmail to verify your account before signing in.',
+            );
         }
 
         $request->session()->regenerate();

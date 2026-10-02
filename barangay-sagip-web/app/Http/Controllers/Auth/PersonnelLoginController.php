@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Rules\PhilippineMobileNumber;
+use App\Rules\GmailAddress;
 use App\Services\AuditLogger;
-use App\Services\PersonnelLoginCodeService;
+use App\Services\EmailLinkService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,21 +16,21 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
- * Subsequent logins for response personnel: one field that takes either the
- * account email or the registered mobile number, plus the password chosen in
- * First Login. Kept apart from the resident login and the staff login.
+ * Subsequent logins for response personnel: the account email plus the
+ * password chosen in First Login. Kept apart from the resident login and the
+ * staff login.
  *
  * Every failure gets the same message, so the form never reveals whether an
- * email or number exists. Five failures from one device lock that identifier
- * out for a while. An account whose setup is unfinished is signed in only to
- * resume First Login — EnsurePersonnelAccountSetup keeps it off everything else.
+ * email exists. Five failures from one device lock that email out for a
+ * while. An account whose email is not yet verified is not signed in; it is
+ * sent to "Check your Gmail" for a new link.
  */
 class PersonnelLoginController extends Controller
 {
-    public const FAILED_MESSAGE = 'Incorrect details. Check your email or mobile number and password.';
+    public const FAILED_MESSAGE = 'Incorrect details. Check your email and password.';
 
     public function __construct(
-        protected PersonnelLoginCodeService $codes,
+        protected EmailLinkService $links,
         protected AuditLogger $auditLogger,
     ) {}
 
@@ -42,36 +42,48 @@ class PersonnelLoginController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'identifier' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string'],
         ], [
-            'identifier.required' => 'Enter your email or mobile number.',
+            'email.required' => 'Enter your email.',
         ]);
 
-        $lockKey = self::lockoutKey($validated['identifier'], (string) $request->ip());
+        $lockKey = self::lockoutKey($validated['email'], (string) $request->ip());
 
         if (RateLimiter::tooManyAttempts($lockKey, $this->maxAttempts())) {
             throw ValidationException::withMessages([
-                'identifier' => sprintf(
+                'email' => sprintf(
                     'Too many failed attempts. Try again in %d minutes, or reset your password.',
                     (int) ceil(RateLimiter::availableIn($lockKey) / 60),
                 ),
             ]);
         }
 
-        $user = $this->findByIdentifier($validated['identifier']);
+        $user = PersonnelOnboardingController::findPersonnelByEmail($validated['email']);
 
-        // Always run one hash check so an unknown identifier takes as long as a
+        // Always run one hash check so an unknown email takes as long as a
         // wrong password.
         $passwordMatches = Hash::check($validated['password'], $user?->password ?? $this->dummyHash());
 
         if ($user === null || ! $passwordMatches || ! $user->hasChosenPassword()) {
             $this->recordFailure($user, $lockKey);
 
-            throw ValidationException::withMessages(['identifier' => self::FAILED_MESSAGE]);
+            throw ValidationException::withMessages(['email' => self::FAILED_MESSAGE]);
         }
 
         RateLimiter::clear($lockKey);
+
+        if (! $user->hasVerifiedEmail()) {
+            if ($this->links->resendAvailableIn($user) === 0) {
+                $this->links->send($user);
+            }
+
+            return EmailVerificationController::redirectToNotice(
+                $request,
+                $user,
+                'Check your Gmail to verify your account before signing in.',
+            );
+        }
 
         Auth::login($user);
         $request->session()->regenerate();
@@ -82,25 +94,6 @@ class PersonnelLoginController extends Controller
             : redirect()->intended(route('dashboard'));
     }
 
-    /**
-     * An address containing "@" is an email; anything else is read as a
-     * Philippine mobile number.
-     */
-    protected function findByIdentifier(string $identifier): ?User
-    {
-        $identifier = trim($identifier);
-
-        if (str_contains($identifier, '@')) {
-            $user = User::where('email', strtolower($identifier))->first();
-
-            return $user !== null && $user->isPersonnel() && $user->responsePersonnel()->exists() ? $user : null;
-        }
-
-        return PhilippineMobileNumber::normalize($identifier) === null
-            ? null
-            : $this->codes->findPersonnel($identifier);
-    }
-
     protected function recordFailure(?User $user, string $lockKey): void
     {
         RateLimiter::hit($lockKey, (int) config('sagip.personnel_login.lockout_minutes', 15) * 60);
@@ -109,7 +102,7 @@ class PersonnelLoginController extends Controller
             action: 'auth.personnel_login_failed',
             subject: $user,
             description: $user === null
-                ? 'Failed personnel sign-in for an unrecognised email or mobile number.'
+                ? 'Failed personnel sign-in for an unrecognised email.'
                 : sprintf('Failed personnel sign-in for %s.', $user->name),
             actor: $user,
         );
@@ -129,18 +122,13 @@ class PersonnelLoginController extends Controller
     }
 
     /**
-     * Keyed on the normalised identifier and the client IP, so an attacker
-     * guessing at one responder's account cannot also lock that responder
-     * out of their own phone mid-emergency.
+     * Keyed on the inbox and the client IP, so an attacker guessing at one
+     * responder's account cannot also lock that responder out of their own
+     * phone mid-emergency.
      */
-    public static function lockoutKey(string $identifier, string $ip): string
+    public static function lockoutKey(string $email, string $ip): string
     {
-        $identifier = trim($identifier);
-        $normalized = str_contains($identifier, '@')
-            ? strtolower($identifier)
-            : (PhilippineMobileNumber::normalize($identifier) ?? strtolower($identifier));
-
-        return 'personnel-login-lockout:'.sha1($normalized.'|'.$ip);
+        return 'personnel-login-lockout:'.sha1(GmailAddress::canonical($email).'|'.$ip);
     }
 
     protected function maxAttempts(): int

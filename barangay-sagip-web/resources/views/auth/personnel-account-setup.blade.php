@@ -2,14 +2,14 @@
 @section('title', 'Choose a Password — Barangay SAGIP')
 
 @section('content')
-{{-- Going back past a verified phone means signing out and starting over. --}}
+{{-- Going back past a verified email means signing out and starting over. --}}
 <x-auth-back-link :action="route('admin.logout')" label="Back (sign out)" />
 <x-onboarding-steps :current="3" />
 
 <p class="text-xs font-bold tracking-wider text-accent uppercase mb-1">First Login</p>
 <h2 class="text-2xl font-bold text-navy">Choose a password</h2>
 <p class="mt-1.5 text-sm text-muted-fg mb-8">
-    Welcome, {{ $user->name }}. Your mobile number is verified. From now on you'll sign in with this password.
+    Welcome, {{ $user->name }}. Your email is verified. From now on you'll sign in with your email and this password.
 </p>
 
 <form method="POST" action="{{ route('account.setup.password.store') }}" class="space-y-5" novalidate>

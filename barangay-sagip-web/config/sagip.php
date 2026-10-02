@@ -88,6 +88,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Emailed links (verification and password reset)
+    |--------------------------------------------------------------------------
+    |
+    | Residents and personnel prove they own their Gmail address by opening a
+    | single-use link; personnel reset a forgotten password the same way. A
+    | link expires after `link_ttl_hours`, and a new one can be requested
+    | every `resend_seconds`.
+    |
+    */
+    'email_links' => [
+        'link_ttl_hours' => (int) env('SAGIP_EMAIL_LINK_TTL_HOURS', 24),
+        'resend_seconds' => (int) env('SAGIP_EMAIL_LINK_RESEND_SECONDS', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | SMS gateway
     |--------------------------------------------------------------------------
     |

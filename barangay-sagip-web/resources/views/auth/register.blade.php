@@ -12,7 +12,8 @@
     <x-auth-field label="Middle Name" name="middle_name" :value="old('middle_name')" :required="false" placeholder="e.g. Padin (optional)" class="capitalize-name" />
     <x-auth-field label="Last Name" name="last_name" :value="old('last_name')" placeholder="e.g. Dela Cruz" class="capitalize-name" />
 
-    <x-auth-field label="Email" name="email" type="email" :value="old('email')" placeholder="you@example.com" />
+    <x-auth-field label="Gmail Address" name="email" type="email" :value="old('email')" placeholder="example@gmail.com" data-gmail-only />
+    <x-gmail-only-script />
     <x-auth-field label="Phone Number" name="phone_number" :value="old('phone_number')" placeholder="09XXXXXXXXX" />
 
     <div>
