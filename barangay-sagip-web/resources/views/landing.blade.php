@@ -73,7 +73,6 @@
     </style>
 </head>
 @php
-    $hotline = (string) config('sagip.sos.hotline_number');
     $holdSeconds = (int) config('sagip.sos.hold_milliseconds', 2000) / 1000;
     $cancelSeconds = (int) config('sagip.sos.cancel_window_seconds', 5);
     $user = auth()->user();
@@ -124,7 +123,9 @@
 <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur border-b transition-[box-shadow,border-color] duration-300"
         :class="pastHero ? 'shadow-card border-line' : 'border-transparent'">
     <div class="max-w-6xl mx-auto h-16 px-4 sm:px-8 flex items-center gap-6">
-        <a href="#top" class="shrink-0"><x-brand-logo class="h-10 rounded-md" /></a>
+        <a href="#top" class="shrink-0 h-10 w-10 rounded-xl bg-accent text-white inline-flex items-center justify-center" aria-label="Barangay SAGIP — back to top">
+            <x-icon name="shield-check" />
+        </a>
 
         <nav class="hidden md:flex items-center gap-1 text-sm font-bold text-muted-fg" aria-label="Page sections">
             <a href="#about" class="px-3 py-2 rounded-lg hover:text-navy hover:bg-canvas transition-colors duration-200">About</a>
@@ -201,10 +202,6 @@
                     @endif
                     <a href="#about" class="inline-flex items-center justify-center min-h-12 rounded-xl border border-white/25 px-6 py-3 font-bold text-white hover:bg-white/10 transition-colors duration-200">Learn how it works</a>
                 </div>
-                <p style="--i: 4" class="hero-in mt-8 text-sm text-slate-400">
-                    In a life-threatening emergency, call the barangay hotline at
-                    <a href="tel:{{ $hotline }}" class="font-bold text-white hover:underline">{{ $hotline }}</a>.
-                </p>
             </div>
 
             {{-- Brand mark: the SAGIP shield on a light disc (its wordmark is dark), radar pulse radiating behind it --}}
@@ -293,22 +290,53 @@
         </div>
 
         <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            @foreach (range(1, 4) as $developer)
-                {{-- Placeholder card: replace the name, role and avatar with the real team member's. --}}
+            @php
+                // Cards still set to null are placeholders for team members not yet added.
+                $developers = [
+                    null,
+                    null,
+                    null,
+                    [
+                        'name' => 'John T. Manlangit',
+                        'role' => 'Programmer / Developer',
+                        'photo' => 'images/developers/john-manlangit.jpg',
+                        'email' => 'manlangitjohn763@gmail.com',
+                        'github' => 'MindForgeJann',
+                    ],
+                ];
+            @endphp
+            @foreach ($developers as $developer)
                 <div class="reveal" style="--i: {{ $loop->index }}">
                 <article class="lift h-full bg-surface rounded-2xl border border-line shadow-card p-6 text-center hover:border-accent/30">
-                    <span class="mx-auto h-24 w-24 rounded-full bg-muted text-slate-400 inline-flex items-center justify-center" role="img" aria-label="Placeholder avatar">
-                        <x-icon name="user" class="w-10 h-10" />
-                    </span>
-                    <h3 class="mt-5 text-lg font-bold text-navy">Developer Name</h3>
-                    <p class="mt-1 text-sm text-muted-fg">Role / Position</p>
-                    <div class="mt-5 flex items-center justify-center gap-2" aria-label="Contact links (placeholders)">
-                        @foreach (['mail' => 'Email', 'globe' => 'Website'] as $icon => $label)
-                            <span title="{{ $label }} (placeholder)" class="h-10 w-10 rounded-full bg-canvas border border-line text-slate-400 inline-flex items-center justify-center">
-                                <x-icon :name="$icon" class="w-4 h-4" :aria-label="$label . ' (placeholder)'" />
-                            </span>
-                        @endforeach
-                    </div>
+                    @if ($developer)
+                        <img src="{{ asset($developer['photo']) }}" alt="Photo of {{ $developer['name'] }}" width="96" height="96" loading="lazy"
+                             class="mx-auto h-24 w-24 rounded-full object-cover ring-2 ring-line">
+                        <h3 class="mt-5 text-lg font-bold text-navy">{{ $developer['name'] }}</h3>
+                        <p class="mt-1 text-sm text-muted-fg">{{ $developer['role'] }}</p>
+                        <div class="mt-5 flex items-center justify-center gap-2" aria-label="Contact links for {{ $developer['name'] }}">
+                            <a href="mailto:{{ $developer['email'] }}" title="Email {{ $developer['email'] }}"
+                               class="h-10 w-10 rounded-full bg-canvas border border-line text-navy inline-flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200">
+                                <x-icon name="mail" class="w-4 h-4" :aria-label="'Email ' . $developer['name']" />
+                            </a>
+                            <a href="https://github.com/{{ $developer['github'] }}" target="_blank" rel="noopener noreferrer" title="GitHub: {{ $developer['github'] }}"
+                               class="h-10 w-10 rounded-full bg-canvas border border-line text-navy inline-flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200">
+                                <x-icon name="github" class="w-4 h-4" :aria-label="$developer['name'] . ' on GitHub'" />
+                            </a>
+                        </div>
+                    @else
+                        <span class="mx-auto h-24 w-24 rounded-full bg-muted text-slate-400 inline-flex items-center justify-center" role="img" aria-label="Placeholder avatar">
+                            <x-icon name="user" class="w-10 h-10" />
+                        </span>
+                        <h3 class="mt-5 text-lg font-bold text-navy">Developer Name</h3>
+                        <p class="mt-1 text-sm text-muted-fg">Role / Position</p>
+                        <div class="mt-5 flex items-center justify-center gap-2" aria-label="Contact links (placeholders)">
+                            @foreach (['mail' => 'Email', 'github' => 'GitHub'] as $icon => $label)
+                                <span title="{{ $label }} (placeholder)" class="h-10 w-10 rounded-full bg-canvas border border-line text-slate-400 inline-flex items-center justify-center">
+                                    <x-icon :name="$icon" class="w-4 h-4" :aria-label="$label . ' (placeholder)'" />
+                                </span>
+                            @endforeach
+                        </div>
+                    @endif
                 </article>
                 </div>
             @endforeach
@@ -320,7 +348,9 @@
 <footer id="contact" class="bg-navy text-slate-300">
     <div class="max-w-6xl mx-auto px-4 sm:px-8 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         <div class="lg:col-span-2">
-            <x-brand-logo class="h-12 rounded-md" />
+            <span class="h-12 w-12 rounded-xl bg-accent text-white inline-flex items-center justify-center" role="img" aria-label="Barangay SAGIP">
+                <x-icon name="shield-check" class="h-6 w-6" />
+            </span>
             <p class="mt-4 max-w-sm text-sm leading-relaxed">
                 The emergency and assistance line for Barangay Calatagan Tibang, Virac, Catanduanes.
             </p>
@@ -330,9 +360,6 @@
             <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Contact</h2>
             <ul class="mt-4 space-y-3 text-sm">
                 <li class="flex items-start gap-2.5"><x-icon name="map-pin" class="w-4 h-4 mt-0.5 text-sky-200" /> Barangay Hall, Calatagan Tibang, Virac, Catanduanes</li>
-                <li class="flex items-start gap-2.5"><x-icon name="phone" class="w-4 h-4 mt-0.5 text-sky-200" />
-                    <span>Hotline: <a href="tel:{{ $hotline }}" class="font-bold text-white hover:underline">{{ $hotline }}</a></span>
-                </li>
             </ul>
         </div>
 
