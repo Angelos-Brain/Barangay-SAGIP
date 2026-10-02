@@ -33,7 +33,7 @@ jobs:
         working-directory: barangay-sagip-web
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -93,10 +93,10 @@ jobs:
         working-directory: tokenization-service
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: pip
@@ -126,7 +126,7 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Prepare Compose environment
         run: cp barangay-sagip-web/.env.production.example barangay-sagip-web/.env.production
@@ -183,7 +183,7 @@ jobs:
 
       - name: Upload container scan reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: container-security-reports
           path: '*.sarif'
@@ -213,13 +213,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Scan repository for secrets
         run: |
+          set -o pipefail
           docker run --rm \
             -v "$GITHUB_WORKSPACE:/repo" \
             ghcr.io/gitleaks/gitleaks:v8.30.0 \
-            detect --source=/repo --config=/repo/.gitleaks.toml --redact --no-banner
+            detect --source=/repo --config=/repo/.gitleaks.toml --redact --no-banner \
+            --report-format json --report-path /repo/gitleaks-report.json || scan_status=$?
+          if [ "${scan_status:-0}" -ne 0 ]; then
+            echo "Gitleaks detected one or more findings. Safe metadata follows (secret values are never printed):"
+            jq -r '.[] | "rule=(.RuleID) file=(.File) commit=(.Commit) lines=(.StartLine)-(.EndLine)"' gitleaks-report.json
+            exit "${scan_status}"
+          fi
+          rm -f gitleaks-report.json
+      - name: Upload Gitleaks metadata for failed scans
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gitleaks-diagnostic
+          path: gitleaks-report.json
+          if-no-files-found: ignore
+          retention-days: 7
