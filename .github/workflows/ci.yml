@@ -13,7 +13,7 @@ env:
 
 jobs:
   laravel:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:17-alpine
@@ -87,7 +87,7 @@ jobs:
         run: npm run build
 
   python:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: tokenization-service
@@ -120,7 +120,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_*.py' -v
 
   docker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       security-events: write
@@ -210,7 +210,7 @@ jobs:
           echo "Container security gate passed: no HIGH/CRITICAL findings in scanned images."
 
   secrets:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -219,23 +219,7 @@ jobs:
 
       - name: Scan repository for secrets
         run: |
-          set -o pipefail
           docker run --rm \
             -v "$GITHUB_WORKSPACE:/repo" \
             ghcr.io/gitleaks/gitleaks:v8.30.0 \
-            detect --source=/repo --config=/repo/.gitleaks.toml --redact --no-banner \
-            --report-format json --report-path /repo/gitleaks-report.json || scan_status=$?
-          if [ "${scan_status:-0}" -ne 0 ]; then
-            echo "Gitleaks detected one or more findings. Safe metadata follows (secret values are never printed):"
-            jq -r '.[] | "rule=(.RuleID) file=(.File) commit=(.Commit) lines=(.StartLine)-(.EndLine)"' gitleaks-report.json
-            exit "${scan_status}"
-          fi
-          rm -f gitleaks-report.json
-      - name: Upload Gitleaks metadata for failed scans
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: gitleaks-diagnostic
-          path: gitleaks-report.json
-          if-no-files-found: ignore
-          retention-days: 7
+            detect --source=/repo --config=/repo/.gitleaks.toml --redact --no-banner
