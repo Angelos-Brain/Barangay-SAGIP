@@ -13,7 +13,7 @@ env:
 
 jobs:
   laravel:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:17-alpine
@@ -33,7 +33,7 @@ jobs:
         working-directory: barangay-sagip-web
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -87,16 +87,16 @@ jobs:
         run: npm run build
 
   python:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: tokenization-service
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: pip
@@ -120,13 +120,13 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_*.py' -v
 
   docker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Prepare Compose environment
         run: cp barangay-sagip-web/.env.production.example barangay-sagip-web/.env.production
@@ -183,7 +183,7 @@ jobs:
 
       - name: Upload container scan reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: container-security-reports
           path: '*.sarif'
@@ -210,10 +210,10 @@ jobs:
           echo "Container security gate passed: no HIGH/CRITICAL findings in scanned images."
 
   secrets:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
