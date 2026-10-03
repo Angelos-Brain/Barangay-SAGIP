@@ -309,13 +309,13 @@
                     [
                         'name' => 'Leia Isabella L. Ronquillo',
                         'role' => 'Technical Writer / Developer',
-                        'photo' => 'images/developers/leia-ronquillo.jpg',
+                        'photo' => 'images/developers/leia-ronquillo.png',
                         'email' => 'mepptako@gmail.com',
                         'github' => 'Leisa-Arts',
                     ],
                     [
                         'name' => 'Anthony Miles C. Jimenez',
-                        'role' => 'UI Design',
+                        'role' => 'UI Design / Developer',
                         'photo' => 'images/developers/anthony-jimenez.jpg',
                         'email' => 'anthonymilesjimenez12@gmail.com',
                         'github' => 'Mileside',
