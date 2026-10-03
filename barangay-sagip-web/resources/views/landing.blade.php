@@ -296,7 +296,7 @@
                     [
                         'name' => 'Mark Angelo P. Solsona',
                         'role' => 'Team Lead / Programmer / Developer',
-                        'photo' => 'images/developers/angelo.png',
+                        'photo' => 'images/developers/angelo-solsona.png',
                         'email' => 'angelosolsona.work@gmail.com',
                         'github' => 'Angelos-Brain',
                     ],
