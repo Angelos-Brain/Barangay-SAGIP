@@ -299,14 +299,26 @@
                         'email' => 'angelosolsona.work@gmail.com',
                         'github' => 'Angelos-Brain',
                     ],
-                    null,
-                    null,
                     [
                         'name' => 'John T. Manlangit',
                         'role' => 'Programmer / Developer',
                         'photo' => 'images/developers/john-manlangit.jpg',
                         'email' => 'manlangitjohn763@gmail.com',
                         'github' => 'MindForgeJann',
+                    ],
+                    [
+                        'name' => 'Leia Isabella L. Ronquillo',
+                        'role' => 'Technical Writer / Developer',
+                        'photo' => 'images/developers/leia-ronquillo.jpg',
+                        'email' => 'mepptako@gmail.com',
+                        'github' => 'Leisa-Arts',
+                    ],
+                    [
+                        'name' => 'Anthony Miles C. Jimenez',
+                        'role' => 'UI Design',
+                        'photo' => 'images/developers/anthony-jimenez.jpg',
+                        'email' => 'anthonymilesjimenez12@gmail.com',
+                        'github' => 'Mileside',
                     ],
                 ];
             @endphp
