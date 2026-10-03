@@ -62,7 +62,7 @@ Install:
 ### 1. Clone the repository
 
 ```powershell
-git clone https://github.com/solsonaM/Barangay-SAGIP.git
+git clone https://github.com/Angelos-Brain/Barangay-SAGIP.git
 cd Barangay-SAGIP
 ```
 
