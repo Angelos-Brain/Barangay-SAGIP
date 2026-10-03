@@ -329,7 +329,7 @@
                         <img src="{{ asset($developer['photo']) }}" alt="Photo of {{ $developer['name'] }}" width="128" height="128" loading="lazy"
                              class="mx-auto h-32 w-32 rounded-full object-cover object-center ring-2 ring-line">
                         <h3 class="mt-5 text-lg font-bold text-navy">{{ $developer['name'] }}</h3>
-                        <p class="mt-1 text-sm text-muted-fg">{{ $developer['role'] }}</p>
+                        <p class="mt-1 min-h-12 text-sm text-muted-fg flex items-start justify-center">{{ $developer['role'] }}</p>
                         <div class="mt-5 flex items-center justify-center gap-2" aria-label="Contact links for {{ $developer['name'] }}">
                             <a href="mailto:{{ $developer['email'] }}" title="Email {{ $developer['email'] }}"
                                class="h-10 w-10 rounded-full bg-canvas border border-line text-navy inline-flex items-center justify-center hover:border-accent hover:text-accent transition-colors duration-200">
