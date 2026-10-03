@@ -256,7 +256,6 @@
             </div>
 
             <ol class="steps relative mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {{-- Connector: shows through the gaps between cards and draws in when the list enters view --}}
                 <span class="hidden lg:block absolute top-12 left-12 right-12 h-0.5 bg-line" aria-hidden="true">
                     <span class="step-line block h-full bg-accent"></span>
                 </span>
@@ -315,8 +314,8 @@
                 <div class="reveal" style="--i: {{ $loop->index }}">
                 <article class="lift h-full bg-surface rounded-2xl border border-line shadow-card p-6 text-center hover:border-accent/30">
                     @if ($developer)
-                        <img src="{{ asset($developer['photo']) }}" alt="Photo of {{ $developer['name'] }}" width="96" height="96" loading="lazy"
-                             class="mx-auto h-24 w-24 rounded-full object-cover ring-2 ring-line">
+                        <img src="{{ asset($developer['photo']) }}" alt="Photo of {{ $developer['name'] }}" width="128" height="128" loading="lazy"
+                             class="mx-auto h-32 w-32 rounded-full object-cover object-center ring-2 ring-line">
                         <h3 class="mt-5 text-lg font-bold text-navy">{{ $developer['name'] }}</h3>
                         <p class="mt-1 text-sm text-muted-fg">{{ $developer['role'] }}</p>
                         <div class="mt-5 flex items-center justify-center gap-2" aria-label="Contact links for {{ $developer['name'] }}">
@@ -330,7 +329,7 @@
                             </a>
                         </div>
                     @else
-                        <span class="mx-auto h-24 w-24 rounded-full bg-muted text-slate-400 inline-flex items-center justify-center" role="img" aria-label="Placeholder avatar">
+                        <span class="mx-auto h-32 w-32 rounded-full bg-muted text-slate-400 inline-flex items-center justify-center" role="img" aria-label="Placeholder avatar">
                             <x-icon name="user" class="w-10 h-10" />
                         </span>
                         <h3 class="mt-5 text-lg font-bold text-navy">Developer Name</h3>
@@ -394,7 +393,6 @@
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const targets = document.querySelectorAll('.reveal, .steps');
 
-        // Hero entrance: start as the splash begins to fade (or now, if there is none).
         const startHero = () => root.classList.add('hero-go');
         const splash = document.getElementById('sg-splash');
         if (!splash || reduceMotion) {
@@ -406,10 +404,9 @@
                     observer.disconnect();
                 }
             }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
-            setTimeout(startHero, 3500); // never later than the splash's own cap
+            setTimeout(startHero, 3500);
         }
 
-        // Scroll reveal — once per element.
         if (reduceMotion || !('IntersectionObserver' in window)) {
             targets.forEach(el => el.classList.add('is-visible'));
             return;
