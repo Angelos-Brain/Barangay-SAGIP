@@ -293,7 +293,13 @@
             @php
                 // Cards still set to null are placeholders for team members not yet added.
                 $developers = [
-                    null,
+                    [
+                        'name' => 'Mark Angelo P. Solsona',
+                        'role' => 'Team Lead / Programmer / Developer',
+                        'photo' => 'images/developers/angelo.png',
+                        'email' => 'angelosolsona.work@gmail.com',
+                        'github' => 'Angelos-Brain',
+                    ],
                     null,
                     null,
                     [
